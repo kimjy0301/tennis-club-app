@@ -74,7 +74,7 @@ export default function PlayerStats() {
   const fetchPlayerGames = async (playerName: string) => {
     setLoadingGames(true);
     try {
-      let url = `${API_URL}/api/players/${encodeURIComponent(playerName)}/games`;
+      const url = `${API_URL}/api/players/${encodeURIComponent(playerName)}/games`;
       const params = new URLSearchParams();
 
       if (dateRange === 'month') {
