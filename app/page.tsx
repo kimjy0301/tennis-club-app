@@ -156,14 +156,14 @@ export default function Home() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="tennis-input"
+                className="tennis-input w-[110px] md:w-auto"
               />
               <span>~</span>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="tennis-input"
+                className="tennis-input w-[110px] md:w-auto"
               />
             </div>
           )}

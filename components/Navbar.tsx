@@ -56,11 +56,13 @@ export default function Navbar() {
           </div>
 
           {/* 모바일 메뉴 버튼 */}
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center z-50">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-white/80 
-                hover:text-white hover:bg-white/10 focus:outline-none"
+              className="inline-flex items-center justify-center p-3 rounded-md text-white/80 
+                hover:text-white hover:bg-white/10 focus:outline-none touch-manipulation"
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
             >
               <span className="sr-only">메뉴 열기</span>
               {!isMenuOpen ? (
@@ -79,7 +81,10 @@ export default function Navbar() {
 
       {/* 모바일 메뉴 */}
       {isMenuOpen && (
-        <div className="md:hidden bg-green-800">
+        <div 
+          className="md:hidden bg-green-800 absolute w-full z-50" 
+          id="mobile-menu"
+        >
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link
               href="/games"

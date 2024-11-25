@@ -17,7 +17,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
           {/* 헤더 */}
           <div className="bg-green-600 p-4 rounded-t-xl">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold text-white">{title}</h2>
+              <h2 className="text-md md:text-xl font-bold text-white">{title}</h2>
               <button
                 onClick={onClose}
                 className="text-white hover:text-gray-200 transition-colors"

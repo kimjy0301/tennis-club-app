@@ -33,6 +33,9 @@ export default function PlayerStats() {
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [playerGames, setPlayerGames] = useState<Game[]>([]);
   const [loadingGames, setLoadingGames] = useState(false);
+  const [dateRange, setDateRange] = useState<'month' | 'all'>('month');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -159,6 +162,52 @@ export default function PlayerStats() {
         </div>
       )}
 
+      {/* 날짜 필터 */}
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
+        <div className="flex flex-col space-y-4">
+          <div className="flex flex-wrap gap-4">
+            <button
+              onClick={() => setDateRange('month')}
+              className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
+                dateRange === 'month'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              최근 1개월
+            </button>
+            <button
+              onClick={() => setDateRange('all')}
+              className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
+                dateRange === 'all'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              전체 기간
+            </button>
+          </div>
+          
+          {dateRange === 'all' && (
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="tennis-input w-full sm:w-auto"
+              />
+              <span className="hidden sm:block">~</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="tennis-input w-full sm:w-auto"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
       <Modal
         isOpen={selectedPlayer !== null}
         onClose={() => setSelectedPlayer(null)}
@@ -169,11 +218,11 @@ export default function PlayerStats() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
         ) : (
-          <div className="space-y-6 max-h-[70vh] overflow-y-auto px-4">
+          <div className="space-y-6 max-h-[70vh] overflow-y-auto px-2 sm:px-4">
             {playerGames.map((game) => (
               <div 
                 key={game.id} 
-                className="bg-white rounded-xl border-2 border-gray-100 p-6 hover:border-green-100 transition-colors"
+                className="bg-white rounded-xl border-2 border-gray-100 p-4 sm:p-6 hover:border-green-100 transition-colors"
               >
                 {/* 날짜 배지 */}
                 <div className="inline-block px-3 py-1 bg-gray-50 rounded-full text-sm text-gray-600 font-medium mb-4">
@@ -181,12 +230,12 @@ export default function PlayerStats() {
                 </div>
                 
                 {/* 스코어 카드 */}
-                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-4">
                   <div className="flex items-center justify-between">
                     {/* A팀 스코어 */}
                     <div className="flex-1 text-center">
-                      <div className="text-sm font-medium text-gray-500 mb-2">A팀</div>
-                      <div className={`text-3xl font-bold ${
+                      <div className="text-sm font-medium text-gray-500 mb-1 sm:mb-2">A팀</div>
+                      <div className={`text-2xl sm:text-3xl font-bold ${
                         (selectedPlayer && game.players.some(p => p.name === selectedPlayer && p.team === 'A')) 
                           ? 'text-green-600' 
                           : 'text-gray-700'
@@ -196,16 +245,16 @@ export default function PlayerStats() {
                     </div>
                     
                     {/* VS 표시 */}
-                    <div className="px-4">
-                      <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center">
-                        <span className="text-gray-400 font-medium">VS</span>
+                    <div className="px-2 sm:px-4">
+                      <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-white shadow-sm flex items-center justify-center">
+                        <span className="text-gray-400 font-medium text-sm sm:text-base">VS</span>
                       </div>
                     </div>
                     
                     {/* B팀 스코어 */}
                     <div className="flex-1 text-center">
-                      <div className="text-sm font-medium text-gray-500 mb-2">B팀</div>
-                      <div className={`text-3xl font-bold ${
+                      <div className="text-sm font-medium text-gray-500 mb-1 sm:mb-2">B팀</div>
+                      <div className={`text-2xl sm:text-3xl font-bold ${
                         (selectedPlayer && game.players.some(p => p.name === selectedPlayer && p.team === 'B')) 
                           ? 'text-green-600' 
                           : 'text-gray-700'
@@ -217,10 +266,10 @@ export default function PlayerStats() {
                 </div>
 
                 {/* 선수 목록 */}
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {/* A팀 선수 */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-sm font-medium text-gray-500 mb-3 pb-2 border-b border-gray-200">
+                  <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+                    <div className="text-sm font-medium text-gray-500 mb-2 pb-2 border-b border-gray-200">
                       A팀 선수
                     </div>
                     <div className="space-y-2">
@@ -229,7 +278,7 @@ export default function PlayerStats() {
                         .map(p => (
                           <div 
                             key={p.name}
-                            className={`px-3 py-1 rounded-full ${
+                            className={`px-3 py-1 rounded-full text-sm ${
                               p.name === selectedPlayer 
                                 ? 'bg-green-100 text-green-700 font-medium' 
                                 : 'bg-white text-gray-600'
@@ -243,8 +292,8 @@ export default function PlayerStats() {
                   </div>
                   
                   {/* B팀 선수 */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-sm font-medium text-gray-500 mb-3 pb-2 border-b border-gray-200">
+                  <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+                    <div className="text-sm font-medium text-gray-500 mb-2 pb-2 border-b border-gray-200">
                       B팀 선수
                     </div>
                     <div className="space-y-2">
@@ -253,7 +302,7 @@ export default function PlayerStats() {
                         .map(p => (
                           <div 
                             key={p.name}
-                            className={`px-3 py-1 rounded-full ${
+                            className={`px-3 py-1 rounded-full text-sm ${
                               p.name === selectedPlayer 
                                 ? 'bg-green-100 text-green-700 font-medium' 
                                 : 'bg-white text-gray-600'
