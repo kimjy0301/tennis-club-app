@@ -1,20 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-
-
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
-
-
-export async function GET(request: Request, context: RouteParams
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const {id} = await context.params;
+    const {id} = await params;
     const intId = parseInt(id);
     const game = await prisma.game.findUnique({
       where: { id: intId },
@@ -39,10 +31,11 @@ export async function GET(request: Request, context: RouteParams
 }
 
 export async function DELETE(
-  request: Request, context: RouteParams
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const {id} = await context.params;
+    const {id} = await params;
     const intId = parseInt(id);
     await prisma.game.delete({
       where: { id: intId },
