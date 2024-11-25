@@ -69,7 +69,7 @@ export default function GamesList() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-bold">
+                    <p className="text-xl font-bold ">
                       {game.scoreTeamA} - {game.scoreTeamB}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">

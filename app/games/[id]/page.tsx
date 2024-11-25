@@ -111,8 +111,8 @@ export default function GameDetail() {
         {/* 테니스 코트 스타일의 헤더 */}
         <div className="bg-green-600 p-6 text-white">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">경기 상세</h1>
-            <div className="text-lg">
+            <h1 className="text-xl md:text-2xl font-bold">경기 상세</h1>
+            <div className="text-sm md:text-lg">
               {new Date(game.date).toLocaleDateString('ko-KR', {
                 year: 'numeric',
                 month: 'long',
@@ -129,7 +129,7 @@ export default function GameDetail() {
             <div className={`text-2xl font-bold ${winningTeam === 'A' ? 'text-yellow-400' : ''}`}>
               A팀
             </div>
-            <div className="text-4xl font-bold">
+            <div className="text-2xl md:text-4xl font-bold">
               {game.scoreTeamA} - {game.scoreTeamB}
             </div>
             <div className={`text-2xl font-bold ${winningTeam === 'B' ? 'text-yellow-400' : ''}`}>
