@@ -23,7 +23,7 @@ export async function GET(
     }
 
     return NextResponse.json(game);
-  } catch (_error) {
+  } catch  {
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 }
@@ -51,7 +51,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ success: true });
-  } catch (_error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to delete game' },
       { status: 500 }
