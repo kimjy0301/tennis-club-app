@@ -1,6 +1,7 @@
 import './globals.css'
 import { Montserrat } from 'next/font/google'
 import Navbar from '@/components/Navbar'
+import { Suspense } from 'react'
 
 const montserrat = Montserrat({ subsets: ['latin'] })
 
@@ -19,7 +20,9 @@ export default function RootLayout({
       <body className={`${montserrat.className} bg-gradient-to-br from-green-50 to-blue-50 min-h-screen`}>
         <Navbar />
         <main className="container mx-auto px-4 md:px-6 py-4 md:py-8">
-          {children}
+          <Suspense fallback={<div>Loading...</div>}>
+            {children}
+          </Suspense>
         </main>
         <div className="fixed -bottom-20 -left-20 w-40 h-40 bg-yellow-300 rounded-full opacity-10"></div>
         <div className="fixed -top-20 -right-20 w-40 h-40 bg-yellow-300 rounded-full opacity-10"></div>
