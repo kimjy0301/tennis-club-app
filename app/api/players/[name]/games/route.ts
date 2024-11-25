@@ -7,16 +7,28 @@ export async function GET(
 ) {
   try {
     const { name } = await params;
-    
-    // 해당 선수가 참여한 모든 게임을 찾습니다
-    const games = await prisma.game.findMany({
-      where: {
-        players: {
-          some: {
-            name: decodeURIComponent(name)
-          }
+    const { searchParams } = new URL(request.url);
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
+    // 날짜 필터 조건 추가
+    const whereCondition: any = {
+      players: {
+        some: {
+          name: decodeURIComponent(name)
         }
-      },
+      }
+    };
+
+    if (startDate && endDate) {
+      whereCondition.date = {
+        gte: new Date(startDate),
+        lte: new Date(endDate),
+      };
+    }
+
+    const games = await prisma.game.findMany({
+      where: whereCondition,
       include: {
         players: true
       },

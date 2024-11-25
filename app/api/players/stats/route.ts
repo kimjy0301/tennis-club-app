@@ -1,60 +1,59 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-interface PlayerStats {
-  name: string;
-  totalGames: number;
-  wins: number;
-  losses: number;
-  winRate: number;
-}
-
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // 모든 게임과 플레이어 데이터를 가져옴
+    const { searchParams } = new URL(request.url);
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
+    // 게임 조회를 위한 where 조건 설정
+    const whereCondition = startDate && endDate ? {
+      date: {
+        gte: new Date(startDate),
+        lte: new Date(endDate),
+      }
+    } : {};
+
+    // 모든 게임 조회
     const games = await prisma.game.findMany({
+      where: whereCondition,
       include: {
         players: true,
       },
     });
 
-    // 플레이어별 통계를 계산
-    const playerStatsMap = new Map<string, PlayerStats>();
+    // 선수별 통계 계산
+    const playerStats = new Map();
 
     games.forEach(game => {
       game.players.forEach(player => {
-        const isTeamA = player.team === 'A';
-        const didWin = isTeamA ? game.scoreTeamA > game.scoreTeamB : game.scoreTeamB > game.scoreTeamA;
+        const stats = playerStats.get(player.name) || {
+          name: player.name,
+          totalGames: 0,
+          wins: 0,
+          losses: 0,
+          winRate: 0,
+        };
 
-        if (!playerStatsMap.has(player.name)) {
-          playerStatsMap.set(player.name, {
-            name: player.name,
-            totalGames: 0,
-            wins: 0,
-            losses: 0,
-            winRate: 0,
-          });
-        }
-
-        const stats = playerStatsMap.get(player.name)!;
-        stats.totalGames += 1;
-        if (didWin) {
-          stats.wins += 1;
+        stats.totalGames++;
+        const isTeamAWinner = game.scoreTeamA > game.scoreTeamB;
+        if ((player.team === 'A' && isTeamAWinner) || (player.team === 'B' && !isTeamAWinner)) {
+          stats.wins++;
         } else {
-          stats.losses += 1;
+          stats.losses++;
         }
         stats.winRate = (stats.wins / stats.totalGames) * 100;
+
+        playerStats.set(player.name, stats);
       });
     });
 
-    // Map을 배열로 변환하고 승률 기준으로 정렬
-    const playerStats = Array.from(playerStatsMap.values()).sort((a, b) => b.winRate - a.winRate);
-
-    return NextResponse.json(playerStats);
+    return NextResponse.json(Array.from(playerStats.values()));
   } catch (error) {
-    console.error('Error fetching player stats:', error);
+    console.error('Error calculating player stats:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch player stats' },
+      { error: 'Failed to calculate player stats' },
       { status: 500 }
     );
   }

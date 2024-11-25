@@ -123,14 +123,13 @@ export default function Home() {
           새 경기 등록
         </Link>
       </div>
-
-      {/* 날짜 필터 */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
-        <div className="flex flex-col md:flex-row gap-4 items-center">
-          <div className="flex gap-4">
+       {/* 날짜 필터 */}
+       <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
+        <div className="flex flex-col space-y-4">
+          <div className="flex flex-wrap gap-4">
             <button
               onClick={() => setDateRange('month')}
-              className={`px-4 py-2 rounded-md ${
+              className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
                 dateRange === 'month'
                   ? 'bg-green-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -140,7 +139,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => setDateRange('all')}
-              className={`px-4 py-2 rounded-md ${
+              className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
                 dateRange === 'all'
                   ? 'bg-green-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -151,19 +150,19 @@ export default function Home() {
           </div>
           
           {dateRange === 'all' && (
-            <div className="flex gap-4 items-center">
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="tennis-input w-[110px] md:w-auto"
+                className="tennis-input w-full sm:w-auto"
               />
-              <span>~</span>
+              <span className="hidden sm:block">~</span>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="tennis-input w-[110px] md:w-auto"
+                className="tennis-input w-full sm:w-auto"
               />
             </div>
           )}

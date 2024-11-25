@@ -40,7 +40,25 @@ export default function PlayerStats() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/players/stats`);
+        let url = `${API_URL}/api/players/stats`;
+        const params = new URLSearchParams();
+
+        if (dateRange === 'month') {
+          const monthAgo = new Date();
+          monthAgo.setMonth(monthAgo.getMonth() - 1);
+          params.append('startDate', monthAgo.toISOString());
+          params.append('endDate', new Date().toISOString());
+        } else if (dateRange === 'all' && startDate && endDate) {
+          const endDateTime = new Date(endDate);
+          endDateTime.setHours(23, 59, 59, 999);
+          params.append('startDate', new Date(startDate).toISOString());
+          params.append('endDate', endDateTime.toISOString());
+        }
+
+        const queryString = params.toString();
+        const finalUrl = queryString ? `${url}?${queryString}` : url;
+        
+        const response = await fetch(finalUrl);
         const data = await response.json();
         setPlayers(data);
       } catch (error) {
@@ -51,12 +69,30 @@ export default function PlayerStats() {
     };
 
     fetchStats();
-  }, []);
+  }, [dateRange, startDate, endDate]);
 
   const fetchPlayerGames = async (playerName: string) => {
     setLoadingGames(true);
     try {
-      const response = await fetch(`${API_URL}/api/players/${encodeURIComponent(playerName)}/games`);
+      let url = `${API_URL}/api/players/${encodeURIComponent(playerName)}/games`;
+      const params = new URLSearchParams();
+
+      if (dateRange === 'month') {
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        params.append('startDate', monthAgo.toISOString());
+        params.append('endDate', new Date().toISOString());
+      } else if (dateRange === 'all' && startDate && endDate) {
+        const endDateTime = new Date(endDate);
+        endDateTime.setHours(23, 59, 59, 999);
+        params.append('startDate', new Date(startDate).toISOString());
+        params.append('endDate', endDateTime.toISOString());
+      }
+
+      const queryString = params.toString();
+      const finalUrl = queryString ? `${url}?${queryString}` : url;
+
+      const response = await fetch(finalUrl);
       const data = await response.json();
       setPlayerGames(data);
     } catch (error) {
@@ -101,6 +137,7 @@ export default function PlayerStats() {
     <div className="max-w-4xl mx-auto p-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">선수별 전적</h1>
+        
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as SortOption)}
@@ -109,6 +146,51 @@ export default function PlayerStats() {
           <option value="winRate">승률순</option>
           <option value="totalGames">경기수순</option>
         </select>
+      </div>
+       {/* 날짜 필터 */}
+       <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
+        <div className="flex flex-col space-y-4">
+          <div className="flex flex-wrap gap-4">
+            <button
+              onClick={() => setDateRange('month')}
+              className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
+                dateRange === 'month'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              최근 1개월
+            </button>
+            <button
+              onClick={() => setDateRange('all')}
+              className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
+                dateRange === 'all'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              전체 기간
+            </button>
+          </div>
+          
+          {dateRange === 'all' && (
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="tennis-input w-full sm:w-auto"
+              />
+              <span className="hidden sm:block">~</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="tennis-input w-full sm:w-auto"
+              />
+            </div>
+          )}
+        </div>
       </div>
       
       <div className="grid gap-6 md:grid-cols-2">
@@ -161,52 +243,7 @@ export default function PlayerStats() {
           등록된 경기 기록이 없습니다.
         </div>
       )}
-
-      {/* 날짜 필터 */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
-        <div className="flex flex-col space-y-4">
-          <div className="flex flex-wrap gap-4">
-            <button
-              onClick={() => setDateRange('month')}
-              className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
-                dateRange === 'month'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              최근 1개월
-            </button>
-            <button
-              onClick={() => setDateRange('all')}
-              className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
-                dateRange === 'all'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              전체 기간
-            </button>
-          </div>
-          
-          {dateRange === 'all' && (
-            <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="tennis-input w-full sm:w-auto"
-              />
-              <span className="hidden sm:block">~</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="tennis-input w-full sm:w-auto"
-              />
-            </div>
-          )}
-        </div>
-      </div>
+     
 
       <Modal
         isOpen={selectedPlayer !== null}
