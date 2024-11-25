@@ -3,12 +3,12 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const game = await prisma.game.findUnique({
       where: {
-        id: parseInt(context.params.id),
+        id: parseInt(params.id),
       },
       include: {
         players: true,
@@ -33,20 +33,20 @@ export async function GET(
 
 export async function DELETE(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     // 먼저 관련된 플레이어 삭제
     await prisma.player.deleteMany({
       where: {
-        gameId: parseInt(context.params.id),
+        gameId: parseInt(params.id),
       },
     });
 
     // 게임 삭제
     await prisma.game.delete({
       where: {
-        id: parseInt(context.params.id),
+        id: parseInt(params.id),
       },
     });
 
