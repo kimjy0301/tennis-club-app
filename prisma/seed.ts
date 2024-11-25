@@ -18,7 +18,7 @@ async function main() {
 
 
   // 최근 30일간의 게임 데이터 생성
-  for (let i = 0; i < 365; i++) {
+  for (let i = 0; i < 30; i++) {
     const gamesPerDay = Math.floor(Math.random() * 10) + 1; // 하루 10-13게임
     
     for (let j = 0; j < gamesPerDay; j++) {
