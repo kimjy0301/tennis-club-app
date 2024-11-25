@@ -12,7 +12,17 @@ export async function GET(
     const endDate = searchParams.get('endDate');
 
     // 날짜 필터 조건 추가
-    const whereCondition: any = {
+    const whereCondition: {
+      players?: {
+        some: {
+          name: string;
+        };
+      };
+      date?: {
+        gte: Date;
+        lte: Date;
+      };
+    } = {
       players: {
         some: {
           name: decodeURIComponent(name)

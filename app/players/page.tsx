@@ -40,7 +40,7 @@ export default function PlayerStats() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        let url = `${API_URL}/api/players/stats`;
+        const url = `${API_URL}/api/players/stats`;
         const params = new URLSearchParams();
 
         if (dateRange === 'month') {
