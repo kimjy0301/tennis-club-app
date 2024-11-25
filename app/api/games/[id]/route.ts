@@ -6,13 +6,11 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const {id} = await params;
+    const intId = parseInt(id);
     const game = await prisma.game.findUnique({
-      where: {
-        id: parseInt(params.id),
-      },
-      include: {
-        players: true,
-      },
+      where: { id: intId },
+      include: { players: true },
     });
 
     if (!game) {
@@ -23,9 +21,10 @@ export async function GET(
     }
 
     return NextResponse.json(game);
-  } catch  {
+  } catch (error) {
+    console.error('Error fetching game:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to fetch game' },
       { status: 500 }
     );
   }
@@ -36,22 +35,15 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // 먼저 관련된 플레이어 삭제
-    await prisma.player.deleteMany({
-      where: {
-        gameId: parseInt(params.id),
-      },
-    });
-
-    // 게임 삭제
+    const {id} = await params;
+    const intId = parseInt(id);
     await prisma.game.delete({
-      where: {
-        id: parseInt(params.id),
-      },
+      where: { id: intId },
     });
 
-    return NextResponse.json({ success: true });
-  } catch {
+    return NextResponse.json({ message: 'Game deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting game:', error);
     return NextResponse.json(
       { error: 'Failed to delete game' },
       { status: 500 }
