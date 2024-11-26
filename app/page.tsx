@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import GameHistoryModal from '@/components/GameHistoryModal';
+import { Game } from '@/types/game';
 
 interface RankingData {
   rank: number;
@@ -18,6 +20,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 export default function Home() {
   const [rankings, setRankings] = useState<RankingData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
+  const [playerGames, setPlayerGames] = useState<Game[]>([]);
+  const [loadingGames, setLoadingGames] = useState(false);
 
   useEffect(() => {
     const fetchRankings = async () => {
@@ -45,6 +50,21 @@ export default function Home() {
     fetchRankings();
   }, []);
 
+  const handlePlayerClick = async (playerName: string) => {
+    setSelectedPlayer(playerName);
+    setLoadingGames(true);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/games?playerName=${playerName}`);
+      const data = await response.json();
+      setPlayerGames(data);
+    } catch (error) {
+      console.error('Error fetching player games:', error);
+    } finally {
+      setLoadingGames(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
@@ -67,7 +87,8 @@ export default function Home() {
         {/* 2등 */}
         <div 
           key={rankings[1]?.name}
-          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300"
+          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300 cursor-pointer hover:scale-105"
+          onClick={() => rankings[1]?.name && handlePlayerClick(rankings[1].name)}
         >
           {/* 순위 뱃지 */}
           <div className="absolute top-4 left-4 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold bg-gray-400">
@@ -100,7 +121,8 @@ export default function Home() {
         {/* 1등 */}
         <div 
           key={rankings[0]?.name}
-          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300 md:-mt-12 md:shadow-xl scale-105 bg-gradient-to-b from-white to-yellow-50"
+          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300 md:-mt-12 md:shadow-xl scale-105 bg-gradient-to-b from-white to-yellow-50 cursor-pointer hover:scale-110"
+          onClick={() => rankings[0]?.name && handlePlayerClick(rankings[0].name)}
         >
           {/* 순위 뱃지 */}
           <div className="absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-yellow-400 animate-pulse">
@@ -135,7 +157,8 @@ export default function Home() {
         {/* 3등 */}
         <div 
           key={rankings[2]?.name}
-          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300"
+          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300 cursor-pointer hover:scale-105"
+          onClick={() => rankings[2]?.name && handlePlayerClick(rankings[2].name)}
         >
           {/* 순위 뱃지 */}
           <div className="absolute top-4 left-4 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold bg-orange-400">
@@ -178,9 +201,15 @@ export default function Home() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {rankings.slice(3).map((player) => (
-                <tr key={player.name} className="hover:bg-gray-50">
+                <tr 
+                  key={player.name} 
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handlePlayerClick(player.name)}
+                >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{player.rank}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{player.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {player.name}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{player.score}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{player.wins}/{player.losses}</td>
                 </tr>
@@ -195,6 +224,14 @@ export default function Home() {
           등록된 경기 기록이 없습니다.
         </div>
       )}
+
+      <GameHistoryModal
+        isOpen={!!selectedPlayer}
+        onClose={() => setSelectedPlayer(null)}
+        playerName={selectedPlayer || ''}
+        games={playerGames}
+        loading={loadingGames}
+      />
     </div>
   );
 }

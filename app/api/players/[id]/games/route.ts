@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ name: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { name } = await params;
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
@@ -15,7 +15,7 @@ export async function GET(
       playerGames: {
         some: {
           player: {
-            name: decodeURIComponent(name)
+            id: parseInt(id)
           }
         }
       }
@@ -42,11 +42,18 @@ export async function GET(
       }
     });
 
-    return NextResponse.json(games);
+    if (!games || games.length === 0) {
+      return NextResponse.json({ games: [] });
+    }
+
+    return NextResponse.json({ games });
   } catch (error) {
     console.error('Error fetching player games:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch player games' },
+      { 
+        error: 'Failed to fetch player games',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }

@@ -36,6 +36,7 @@ export async function GET(request: Request) {
         const stats = playerStats.get(player.name) || {
           name: player.name,
           profileImage: player.profileImage,
+          id: player.id,
           totalGames: 0,
           wins: 0,
           losses: 0,
@@ -54,6 +55,7 @@ export async function GET(request: Request) {
         playerStats.set(player.name, stats);
       });
     });
+
 
     return NextResponse.json(Array.from(playerStats.values()));
   } catch (error) {

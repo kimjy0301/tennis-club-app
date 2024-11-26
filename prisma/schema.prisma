@@ -19,7 +19,7 @@ model Player {
   id         Int         @id @default(autoincrement())
   name       String
   profileImage String?
-  playerGames PlayerGame[]
+  playerGames PlayerGame[] 
 }
 
 model PlayerGame {

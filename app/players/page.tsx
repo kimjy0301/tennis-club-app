@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Modal from '@/components/Modal';
 import Image from 'next/image';
+import GameHistoryModal from '@/components/GameHistoryModal';
 
 interface PlayerStats {
+  id: number;
   name: string;
   totalGames: number;
   wins: number;
@@ -20,6 +21,7 @@ interface Game {
   scoreTeamB: number;
   playerGames: {
     player: {
+      id: number;
       name: string;
       profileImage?: string;
     };
@@ -35,7 +37,7 @@ export default function PlayerStats() {
   const [players, setPlayers] = useState<PlayerStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>('winRate');
-  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
   const [playerGames, setPlayerGames] = useState<Game[]>([]);
   const [loadingGames, setLoadingGames] = useState(false);
   const [dateRange, setDateRange] = useState<'month' | 'all'>('month');
@@ -65,6 +67,7 @@ export default function PlayerStats() {
         
         const response = await fetch(finalUrl);
         const data = await response.json();
+        
         setPlayers(data);
       } catch (error) {
         console.error('Error fetching player stats:', error);
@@ -76,10 +79,10 @@ export default function PlayerStats() {
     fetchStats();
   }, [dateRange, startDate, endDate]);
 
-  const fetchPlayerGames = async (playerName: string) => {
+  const fetchPlayerGames = async (playerId: number) => {
     setLoadingGames(true);
     try {
-      const url = `${API_URL}/api/players/${encodeURIComponent(playerName)}/games`;
+      const url = `${API_URL}/api/players/${playerId}/games`;
       const params = new URLSearchParams();
 
       if (dateRange === 'month') {
@@ -99,17 +102,21 @@ export default function PlayerStats() {
 
       const response = await fetch(finalUrl);
       const data = await response.json();
-      setPlayerGames(data);
+      
+      setPlayerGames(data.games || []);
     } catch (error) {
       console.error('Error fetching player games:', error);
+      setPlayerGames([]);
     } finally {
       setLoadingGames(false);
     }
   };
 
-  const handlePlayerClick = async (playerName: string) => {
-    setSelectedPlayer(playerName);
-    await fetchPlayerGames(playerName);
+  const handlePlayerClick = async (playerId: number) => {
+
+    
+    setSelectedPlayerId(playerId);
+    await fetchPlayerGames(playerId);
   };
 
   const getSortedPlayers = () => {
@@ -129,6 +136,8 @@ export default function PlayerStats() {
       weekday: 'long',
     });
   };
+
+  const selectedPlayer = players.find(p => p.id === selectedPlayerId)?.name;
 
   if (loading) {
     return (
@@ -201,9 +210,9 @@ export default function PlayerStats() {
       <div className="grid gap-6 md:grid-cols-2">
         {getSortedPlayers().map((player) => (
           <div 
-            key={player.name} 
+            key={player.id} 
             className="sport-card p-6 cursor-pointer hover:shadow-lg transition-shadow duration-200"
-            onClick={() => handlePlayerClick(player.name)}
+            onClick={() => handlePlayerClick(player.id)}
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -260,138 +269,13 @@ export default function PlayerStats() {
       )}
      
 
-      <Modal
-        isOpen={selectedPlayer !== null}
-        onClose={() => setSelectedPlayer(null)}
-        title={`${selectedPlayer} 선수의 경기 기록`}
-      >
-        {loadingGames ? (
-          <div className="flex justify-center items-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          </div>
-        ) : (
-          <div className="space-y-6 max-h-[70vh] overflow-y-auto px-2 sm:px-4">
-            {playerGames.map((game) => (
-              <div 
-                key={game.id} 
-                className="bg-white rounded-xl border-2 border-gray-100 p-4 sm:p-6 hover:border-green-100 transition-colors"
-              >
-                {/* 날짜와 승패 배지 */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="px-3 py-1 bg-gray-50 rounded-full text-sm text-gray-600 font-medium">
-                    {formatDate(game.date)}
-                  </div>
-                  {selectedPlayer && (
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      (game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'A') && game.scoreTeamA > game.scoreTeamB) ||
-                      (game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'B') && game.scoreTeamB > game.scoreTeamA)
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
-                    }`}>
-                      {(game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'A') && game.scoreTeamA > game.scoreTeamB) ||
-                       (game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'B') && game.scoreTeamB > game.scoreTeamA)
-                        ? '승'
-                        : '패'}
-                    </div>
-                  )}
-                </div>
-                
-                {/* 스코어 카드 */}
-                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-4">
-                  <div className="flex items-center justify-between">
-                    {/* A팀 스코어 */}
-                    <div className="flex-1 text-center">
-                      <div className="text-sm font-medium text-gray-500 mb-1 sm:mb-2">A팀</div>
-                      <div className={`text-2xl sm:text-3xl font-bold ${
-                        (selectedPlayer && game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'A')) 
-                          ? 'text-green-600' 
-                          : 'text-gray-700'
-                      }`}>
-                        {game.scoreTeamA}
-                      </div>
-                    </div>
-                    
-                    {/* VS 표시 */}
-                    <div className="px-2 sm:px-4">
-                      <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-white shadow-sm flex items-center justify-center">
-                        <span className="text-gray-400 font-medium text-sm sm:text-base">VS</span>
-                      </div>
-                    </div>
-                    
-                    {/* B팀 스코어 */}
-                    <div className="flex-1 text-center">
-                      <div className="text-sm font-medium text-gray-500 mb-1 sm:mb-2">B팀</div>
-                      <div className={`text-2xl sm:text-3xl font-bold ${
-                        (selectedPlayer && game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'B')) 
-                          ? 'text-green-600' 
-                          : 'text-gray-700'
-                      }`}>
-                        {game.scoreTeamB}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 선수 목록 */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  {/* A팀 선수 */}
-                  <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
-                    <div className="text-sm font-medium text-gray-500 mb-2 pb-2 border-b border-gray-200">
-                      A팀 선수
-                    </div>
-                    <div className="space-y-2">
-                      {game.playerGames
-                        .filter(pg => pg.team === 'A')
-                        .map(pg => (
-                          <div 
-                            key={pg.player.name}
-                            className={`px-3 py-1 rounded-full text-sm ${
-                              pg.player.name === selectedPlayer 
-                                ? 'bg-green-100 text-green-700 font-medium' 
-                                : 'bg-white text-gray-600'
-                            }`}
-                          >
-                            {pg.player.name}
-                          </div>
-                        ))
-                      }
-                    </div>
-                  </div>
-                  
-                  {/* B팀 선수 */}
-                  <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
-                    <div className="text-sm font-medium text-gray-500 mb-2 pb-2 border-b border-gray-200">
-                      B팀 선수
-                    </div>
-                    <div className="space-y-2">
-                      {game.playerGames
-                        .filter(pg => pg.team === 'B')
-                        .map(pg => (
-                          <div 
-                            key={pg.player.name}
-                            className={`px-3 py-1 rounded-full text-sm ${
-                              pg.player.name === selectedPlayer 
-                                ? 'bg-green-100 text-green-700 font-medium' 
-                                : 'bg-white text-gray-600'
-                            }`}
-                          >
-                            {pg.player.name}
-                          </div>
-                        ))
-                      }
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {playerGames.length === 0 && (
-              <div className="py-12 text-center text-gray-500">
-                등록된 경기가 없습니다.
-              </div>
-            )}
-          </div>
-        )}
-      </Modal>
+      <GameHistoryModal
+        isOpen={selectedPlayerId !== null}
+        onClose={() => setSelectedPlayerId(null)}
+        playerName={selectedPlayer || ''}
+        games={playerGames}
+        loading={loadingGames}
+      />
     </div>
   );
 } 
