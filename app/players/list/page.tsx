@@ -13,22 +13,79 @@ interface Player {
 export default function PlayerList() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchPlayers = async () => {
-      try {
-        const response = await fetch('/api/players');
-        const data = await response.json();
-        setPlayers(data);
-      } catch (error) {
-        console.error('Error fetching players:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchPlayers();
   }, []);
+
+  const fetchPlayers = async () => {
+    try {
+      const response = await fetch('/api/players');
+      const data = await response.json();
+      setPlayers(data);
+    } catch (error) {
+      console.error('Error fetching players:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+        setError('');
+      } else {
+        setError('비밀번호가 올바르지 않습니다.');
+      }
+    } catch (error) {
+      setError('인증 과정에서 오류가 발생했습니다.');
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">관리자 인증</h2>
+        <form onSubmit={handleAuth} className="space-y-4">
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              비밀번호
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="tennis-input mt-1 block w-full"
+              placeholder="관리자 비밀번호를 입력하세요"
+            />
+          </div>
+          {error && (
+            <p className="text-red-500 text-sm">{error}</p>
+          )}
+          <button
+            type="submit"
+            className="tennis-button w-full"
+          >
+            인증하기
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

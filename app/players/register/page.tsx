@@ -31,7 +31,7 @@ export default function PlayerRegister() {
       } else {
         setError('비밀번호가 올바르지 않습니다.');
       }
-    } catch (error) {
+    } catch  {
       setError('인증 과정에서 오류가 발생했습니다.');
     }
   };
@@ -72,7 +72,7 @@ export default function PlayerRegister() {
         const data = await response.json();
         setError(data.error || '선수 등록에 실패했습니다.');
       }
-    } catch (error) {
+    } catch  {
       setError('선수 등록 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);

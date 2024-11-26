@@ -68,7 +68,7 @@ export default function NewGame() {
         throw new Error('Failed to create game');
       }
 
-      const result = await response.json();
+      await response.json();
       router.push('/');
     } catch (error) {
       console.error('Error creating game:', error);
