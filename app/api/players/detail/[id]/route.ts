@@ -69,7 +69,7 @@ export async function PUT(
 // DELETE - 선수 삭제
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<    { id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -86,9 +86,13 @@ export async function DELETE(
       );
     }
 
-    // 선수와 관련된 게임 데이터 처리
+    // 선수와 관련된 모든 데이터 삭제 (트랜잭션 사용)
     await prisma.$transaction([
-      // 선수가 참여한 게임에서 선수 제거
+      // 1. 먼저 PlayerGame 테이블의 관련 레코드 삭제
+      prisma.playerGame.deleteMany({
+        where: { playerId: parseInt(id) },
+      }),
+      // 2. 그 다음 Player 테이블에서 선수 삭제
       prisma.player.delete({
         where: { id: parseInt(id) },
       }),
