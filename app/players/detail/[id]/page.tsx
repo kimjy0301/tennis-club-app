@@ -10,10 +10,6 @@ interface Player {
   profileImage?: string;
 }
 
-interface Props {
-  playerId: string;
-}
-
 export default function PlayerDetail() {
   const router = useRouter();
   const [player, setPlayer] = useState<Player | null>(null);
@@ -28,7 +24,7 @@ export default function PlayerDetail() {
   
   useEffect(() => {
     fetchPlayer();
-  }, [params.id]);
+  }, []);
 
   const fetchPlayer = async () => {
     try {
