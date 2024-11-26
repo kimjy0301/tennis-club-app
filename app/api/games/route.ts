@@ -5,8 +5,6 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    console.log(body);
-    
     // Validate that playerGames array exists
     if (!body.playerGames || !Array.isArray(body.playerGames)) {
       return NextResponse.json(

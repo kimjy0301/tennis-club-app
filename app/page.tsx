@@ -13,6 +13,7 @@ interface RankingData {
   losses: number;
   score: number;
   profileImage?: string;
+  id: string;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -23,6 +24,10 @@ export default function Home() {
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [playerGames, setPlayerGames] = useState<Game[]>([]);
   const [loadingGames, setLoadingGames] = useState(false);
+
+  const [dateRange ] = useState<'month' | 'all'>('month');
+  const [startDate ] = useState('');
+  const [endDate ] = useState('');
 
   useEffect(() => {
     const fetchRankings = async () => {
@@ -38,7 +43,6 @@ export default function Home() {
         const response = await fetch(`${API_URL}/api/rankings?${params}`);
         const data = await response.json();
 
-        console.log(data);
         setRankings(data);
       } catch (error) {
         console.error('Error fetching rankings:', error);
@@ -50,13 +54,36 @@ export default function Home() {
     fetchRankings();
   }, []);
 
-  const handlePlayerClick = async (playerName: string) => {
-    setSelectedPlayer(playerName);
+  const handlePlayerClick = async (playerId: string) => {
+    const player = rankings.find(r => r.id === playerId);
+    setSelectedPlayer(player?.name || null);
     setLoadingGames(true);
     
     try {
-      const response = await fetch(`${API_URL}/api/games?playerName=${playerName}`);
+      const url = `${API_URL}/api/players/${playerId}/games`;
+      const params = new URLSearchParams();
+
+      if (dateRange === 'month') {
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        params.append('startDate', monthAgo.toISOString());
+        params.append('endDate', new Date().toISOString());
+      } else if (dateRange === 'all' && startDate && endDate) {
+        const endDateTime = new Date(endDate);
+        endDateTime.setHours(23, 59, 59, 999);
+        params.append('startDate', new Date(startDate).toISOString());
+        params.append('endDate', endDateTime.toISOString());
+      }
+
+      const queryString = params.toString();
+      const finalUrl = queryString ? `${url}?${queryString}` : url;
+
+      const response = await fetch(finalUrl);
       const data = await response.json();
+
+      console.log(data);
+
+
       setPlayerGames(data);
     } catch (error) {
       console.error('Error fetching player games:', error);
@@ -88,7 +115,7 @@ export default function Home() {
         <div 
           key={rankings[0]?.name}
           className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300 mb-6 bg-gradient-to-b from-yellow-50 to-white cursor-pointer hover:scale-105"
-          onClick={() => rankings[0]?.name && handlePlayerClick(rankings[0].name)}
+          onClick={() => rankings[0]?.id && handlePlayerClick(rankings[0].id)}
         >
           <div className="absolute inset-0 bg-gradient-to-b from-yellow-200/20 to-transparent"></div>
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-300"></div>
@@ -124,7 +151,7 @@ export default function Home() {
             <div 
               key={player?.name}
               className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300 cursor-pointer hover:scale-105"
-              onClick={() => player?.name && handlePlayerClick(player.name)}
+              onClick={() => player?.id && handlePlayerClick(player.id)}
             >
               {/* 순위 뱃지 */}
               <div className={`absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ${
@@ -167,7 +194,7 @@ export default function Home() {
         <div 
           key={rankings[1]?.name}
           className="sport-card md:translate-y-4 p-6 text-center relative overflow-hidden transition-all duration-300 cursor-pointer hover:scale-105"
-          onClick={() => rankings[1]?.name && handlePlayerClick(rankings[1].name)}
+          onClick={() => rankings[1]?.id && handlePlayerClick(rankings[1].id)}
         >
           {/* 순위 뱃지 */}
           <div className="absolute top-4 left-4 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold bg-gray-400">
@@ -201,7 +228,7 @@ export default function Home() {
         <div 
           key={rankings[0]?.name}
           className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-yellow-50 to-white cursor-pointer hover:scale-105"
-          onClick={() => rankings[0]?.name && handlePlayerClick(rankings[0].name)}
+          onClick={() => rankings[0]?.id && handlePlayerClick(rankings[0].id)}
         >
           {/* 순위 뱃지 */}
           <div className="absolute top-4 left-4 w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-yellow-400 animate-pulse text-xl shadow-lg">
@@ -238,7 +265,7 @@ export default function Home() {
         <div 
           key={rankings[2]?.name}
           className="sport-card md:translate-y-4 p-6 text-center relative overflow-hidden transition-all duration-300 cursor-pointer hover:scale-105"
-          onClick={() => rankings[2]?.name && handlePlayerClick(rankings[2].name)}
+          onClick={() => rankings[2]?.id && handlePlayerClick(rankings[2].id)}
         >
           {/* 순위 뱃지 */}
           <div className="absolute top-4 left-4 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold bg-orange-400">
@@ -284,7 +311,7 @@ export default function Home() {
                 <tr 
                   key={player.name} 
                   className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handlePlayerClick(player.name)}
+                  onClick={() => handlePlayerClick(player.id)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{player.rank}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
