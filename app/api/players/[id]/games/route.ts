@@ -11,7 +11,19 @@ export async function GET(
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
 
-    const whereCondition: any = {
+    const whereCondition: {
+      playerGames: {
+        some: {
+          player: {
+            id: number
+          }
+        }
+      },
+      date?: {
+        gte: Date,
+        lte: Date
+      }
+    } = {
       playerGames: {
         some: {
           player: {

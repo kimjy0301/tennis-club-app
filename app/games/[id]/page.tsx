@@ -153,7 +153,7 @@ export default function GameDetail() {
               <div className="space-y-2">
                 {game.playerGames
                   .filter(pg => pg.team === 'A')
-                  .map((playerGame, idx) => (
+                  .map((playerGame) => (
                     <div key={playerGame.id} className="bg-white p-3 rounded-lg shadow-sm">
                       {playerGame.player.name}
                     </div>
@@ -166,7 +166,7 @@ export default function GameDetail() {
               <div className="space-y-2">
                 {game.playerGames
                   .filter(pg => pg.team === 'B')
-                  .map((playerGame, idx) => (
+                  .map((playerGame) => (
                     <div key={playerGame.id} className="bg-white p-3 rounded-lg shadow-sm">
                       {playerGame.player.name}
                     </div>

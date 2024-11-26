@@ -41,7 +41,7 @@ export default function GameCard({ id, playerGames = [], scoreTeamA, scoreTeamB,
           <div className="col-span-3 text-right">
             <div className="space-y-0.5 sm:space-y-1">
               {playerGames?.filter(pg => pg.team === 'A')
-                .map((playerGame, idx) => (
+                .map((playerGame) => (
                   <div key={playerGame.id} className="text-gray-700 text-sm sm:text-base truncate">
                     {playerGame.player.name}
                   </div>
@@ -67,7 +67,7 @@ export default function GameCard({ id, playerGames = [], scoreTeamA, scoreTeamB,
           <div className="col-span-3 text-left">
             <div className="space-y-0.5 sm:space-y-1">
               {playerGames?.filter(pg => pg.team === 'B')
-                .map((playerGame, idx) => (
+                .map((playerGame) => (
                   <div key={playerGame.id} className="text-gray-700 text-sm sm:text-base truncate">
                     {playerGame.player.name}
                   </div>

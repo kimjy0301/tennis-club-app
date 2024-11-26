@@ -128,15 +128,6 @@ export default function PlayerStats() {
     });
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long',
-    });
-  };
-
   const selectedPlayer = players.find(p => p.id === selectedPlayerId)?.name;
 
   if (loading) {
