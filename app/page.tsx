@@ -123,7 +123,7 @@ export default function Home() {
           <div className="absolute top-4 left-4 w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-yellow-400 animate-pulse text-xl shadow-lg">
             1
           </div>
-          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-4xl animate-bounce">
+          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-4xl animate-bounce z-50">
             👑
           </div>
           
@@ -235,7 +235,7 @@ export default function Home() {
             1
           </div>
 
-          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-4xl animate-bounce">
+          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-4xl animate-bounce z-50">
             👑
           </div>
           
