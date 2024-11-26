@@ -43,9 +43,13 @@ export async function PUT(
 
     let imageUrl;
     if (profileImage) {
-      // 이미지 처리 로직 (이미지 업로드 및 URL 생성)
-      // 실제 구현에서는 이미지를 저장하고 URL을 반환하는 로직 필요
-      imageUrl = '/path/to/image'; // 예시
+      // Vercel Blob으로 이미지 업로드
+      const timestamp = Date.now();
+      const fileName = `${timestamp}-${profileImage.name}`;
+      const blob = await put(`profiles/${fileName}`, profileImage, {
+        access: 'public',
+      });
+      imageUrl = blob.url;
     }
 
     const player = await prisma.player.update({
