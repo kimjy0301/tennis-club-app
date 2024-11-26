@@ -1,11 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Player {
   name: string;
   team: 'A' | 'B';
+}
+
+interface PlayerFromDB {
+  id: string;
+  name: string;
 }
 
 interface GameResult {
@@ -19,6 +24,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export default function NewGame() {
   const router = useRouter();
+  const [players, setPlayers] = useState<PlayerFromDB[]>([]);
   const [gameData, setGameData] = useState<GameResult>({
     date: new Date().toISOString().split('T')[0],
     players: [
@@ -30,6 +36,21 @@ export default function NewGame() {
     scoreTeamA: 0,
     scoreTeamB: 0
   });
+
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/players`);
+        if (!response.ok) throw new Error('Failed to fetch players');
+        const data = await response.json();
+        setPlayers(data);
+      } catch (error) {
+        console.error('Error fetching players:', error);
+      }
+    };
+
+    fetchPlayers();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +68,7 @@ export default function NewGame() {
         throw new Error('Failed to create game');
       }
 
-      await response.json();
+      const result = await response.json();
       router.push('/');
     } catch (error) {
       console.error('Error creating game:', error);
@@ -77,9 +98,7 @@ export default function NewGame() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   선수 {idx + 1}
                 </label>
-                <input
-                  type="text"
-                  placeholder={`선수 이름`}
+                <select
                   value={player.name}
                   onChange={(e) => {
                     const newPlayers = [...gameData.players];
@@ -87,7 +106,14 @@ export default function NewGame() {
                     setGameData({...gameData, players: newPlayers});
                   }}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
+                >
+                  <option value="">선수 선택</option>
+                  {players.map((p) => (
+                    <option key={p.id} value={p.name}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             ))}
             <div>
@@ -108,9 +134,7 @@ export default function NewGame() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   선수 {idx + 1}
                 </label>
-                <input
-                  type="text"
-                  placeholder={`선수 이름`}
+                <select
                   value={player.name}
                   onChange={(e) => {
                     const newPlayers = [...gameData.players];
@@ -118,7 +142,14 @@ export default function NewGame() {
                     setGameData({...gameData, players: newPlayers});
                   }}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
+                >
+                  <option value="">선수 선택</option>
+                  {players.map((p) => (
+                    <option key={p.id} value={p.name}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             ))}
             <div>

@@ -3,15 +3,17 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }>
- }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const {id} = await params;
+    const { id } = await params;
     const intId = parseInt(id);
+    
     const game = await prisma.game.findUnique({
       where: { id: intId },
-      include: { players: true },
+      include: {
+        players: true,
+      },
     });
 
     if (!game) {
@@ -36,8 +38,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const {id} = await params;
+    const { id } = await params;
     const intId = parseInt(id);
+
     await prisma.game.delete({
       where: { id: intId },
     });

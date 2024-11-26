@@ -1,124 +1,112 @@
 'use client';
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
-  const pathname = usePathname()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActivePath = (path: string) => pathname === path;
+
+  const navLinks = [
+    { href: '/', label: '홈' },
+    { href: '/games', label: '경기 기록' },
+    { href: '/players', label: '선수별 기록' },
+    { href: '/rankings', label: '전체 랭킹' },
+    { href: '/games/new', label: '경기 등록' },
+  ];
 
   return (
-    <nav className="tennis-gradient text-white shadow-lg">
-      <div className="container mx-auto px-4">
+    <nav className="bg-gradient-to-r from-green-600 to-green-700 shadow-lg">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
+          {/* 로고 */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <span className="text-2xl tennis-ball">🎾</span>
-              <span className="text-xl font-bold group-hover:text-yellow-300 transition-colors">
-                성라클럽
-              </span>
-            </Link>
-          </div>
-          
-          {/* 데스크톱 메뉴 */}
-          <div className="hidden md:flex space-x-8">
-            <Link
-              href="/"
-              className={`inline-flex items-center px-3 py-2 rounded-md text-sm font-medium 
-                ${pathname === '/'
-                  ? 'bg-white/20 text-white'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
-                } transition-all duration-200`}
-            >
-              경기 기록
-            </Link>
-            <Link
-              href="/players"
-              className={`inline-flex items-center px-3 py-2 rounded-md text-sm font-medium 
-                ${pathname === '/players'
-                  ? 'bg-white/20 text-white'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
-                } transition-all duration-200`}
-            >
-              선수 통계
-            </Link>
-            <Link
-              href="/games/new"
-              className={`inline-flex items-center px-3 py-2 rounded-md text-sm font-medium 
-                ${pathname === '/games/new'
-                  ? 'bg-white/20 text-white'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
-                } transition-all duration-200`}
-            >
-              새 경기
+            <Link href="/" className="text-xl font-bold text-white hover:text-green-100 transition-colors">
+              성라클럽
             </Link>
           </div>
 
-          {/* 모바일 메뉴 버튼 */}
+          {/* 데스크톱 메뉴 */}
+          <div className="hidden md:flex items-center space-x-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  isActivePath(link.href)
+                    ? 'bg-green-700 text-white shadow-inner'
+                    : 'text-green-100 hover:bg-green-500/30'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* 모바일 햄버거 버튼 */}
           <div className="md:hidden flex items-center z-50">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-3 rounded-md text-white/80 
-                hover:text-white hover:bg-white/10 focus:outline-none touch-manipulation"
-              aria-expanded={isMenuOpen}
-              aria-controls="mobile-menu"
+              className="inline-flex items-center justify-center p-2 rounded-md text-green-100 
+                hover:text-white hover:bg-green-500/30 focus:outline-none focus:ring-2 
+                focus:ring-inset focus:ring-green-100"
             >
               <span className="sr-only">메뉴 열기</span>
-              {!isMenuOpen ? (
-                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              ) : (
-                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
+              <svg
+                className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+              <svg
+                className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             </button>
           </div>
         </div>
       </div>
 
       {/* 모바일 메뉴 */}
-      {isMenuOpen && (
-        <div 
-          className="md:hidden bg-green-800 absolute w-full z-50" 
-          id="mobile-menu"
-        >
-          <div className="px-2 pt-2 pb-3 space-y-1">
+      <div className={`${isMenuOpen ? 'block' : 'hidden'} md:hidden bg-green-700`}>
+        <div className="px-2 pt-2 pb-3 space-y-1">
+          {navLinks.map((link) => (
             <Link
-              href="/games"
-              className={`block px-3 py-2 rounded-md text-base font-medium 
-                ${pathname === '/games'
-                  ? 'bg-white/20 text-white'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
-                }`}
+              key={link.href}
+              href={link.href}
+              className={`block px-3 py-2 rounded-md text-base font-medium ${
+                isActivePath(link.href)
+                  ? 'bg-green-600 text-white'
+                  : 'text-green-100 hover:bg-green-500/30 hover:text-white'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
             >
-              경기 기록
+              {link.label}
             </Link>
-            <Link
-              href="/players"
-              className={`block px-3 py-2 rounded-md text-base font-medium 
-                ${pathname === '/players'
-                  ? 'bg-white/20 text-white'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
-                }`}
-            >
-              선수 통계
-            </Link>
-            <Link
-              href="/games/new"
-              className={`block px-3 py-2 rounded-md text-base font-medium 
-                ${pathname === '/games/new'
-                  ? 'bg-white/20 text-white'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
-                }`}
-            >
-              새 경기
-            </Link>
-          </div>
+          ))}
         </div>
-      )}
+      </div>
     </nav>
-  )
+  );
 } 

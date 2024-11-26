@@ -9,33 +9,32 @@ const players = [
 ];
 
 async function main() {
-
-
-    
   await prisma.player.deleteMany();
   await prisma.game.deleteMany();
 
-
+  // 먼저 선수들을 생성
+  for (const playerName of players) {
+    await prisma.player.create({
+      data: {
+        name: playerName,
+      },
+    });
+  }
 
   // 최근 30일간의 게임 데이터 생성
   for (let i = 0; i < 30; i++) {
-    const gamesPerDay = Math.floor(Math.random() * 10) + 1; // 하루 10-13게임
+    const gamesPerDay = Math.floor(Math.random() * 10) + 1;
     
     for (let j = 0; j < gamesPerDay; j++) {
-      // 랜덤 날짜 생성 (최근 30일 이내)
       const date = new Date();
       date.setDate(date.getDate() - i);
       
-      // 랜덤 점수 생성 (0-7)
-      const scoreTeamA = Math.floor(Math.random() * 6);
-      const scoreTeamB = Math.floor(Math.random() * 6);
-      
-      // 동점이 나오지 않도록 조정
-      if (scoreTeamA === scoreTeamB) {
-        scoreTeamB + 1;
-      }
+      // 승리팀은 6점, 패배팀은 0-5점
+      const losingScore = Math.floor(Math.random() * 6);
+      const isTeamAWinner = Math.random() < 0.5;
+      const scoreTeamA = isTeamAWinner ? 6 : losingScore;
+      const scoreTeamB = isTeamAWinner ? losingScore : 6;
 
-      // 게임 생성
       const game = await prisma.game.create({
         data: {
           date: date,
@@ -44,35 +43,31 @@ async function main() {
         },
       });
 
-      // 선수 선택 및 생성
-      const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
-      const gamePlayers = shuffledPlayers.slice(0, 4); // 4명 선택
+      // 데이터베이스에서 랜덤하게 4명의 선수 선택
+      const randomPlayers = await prisma.player.findMany({
+        take: 4,
+        orderBy: {
+          id: 'asc',
+        },
+        skip: Math.floor(Math.random() * (players.length - 3)), // 랜덤하게 선수 선택
+      });
 
-      // A팀 선수 2명
-      await prisma.player.createMany({
-        data: [
-          {
-            name: gamePlayers[0],
-            team: 'A',
-            gameId: game.id,
-          },
-          {
-            name: gamePlayers[1],
-            team: 'A',
-            gameId: game.id,
-          },
-          // B팀 선수 2명
-          {
-            name: gamePlayers[2],
-            team: 'B',
-            gameId: game.id,
-          },
-          {
-            name: gamePlayers[3],
-            team: 'B',
-            gameId: game.id,
-          },
-        ],
+      // 선수들을 게임에 할당
+      await prisma.player.update({
+        where: { id: randomPlayers[0].id },
+        data: { team: 'A', gameId: game.id },
+      });
+      await prisma.player.update({
+        where: { id: randomPlayers[1].id },
+        data: { team: 'A', gameId: game.id },
+      });
+      await prisma.player.update({
+        where: { id: randomPlayers[2].id },
+        data: { team: 'B', gameId: game.id },
+      });
+      await prisma.player.update({
+        where: { id: randomPlayers[3].id },
+        data: { team: 'B', gameId: game.id },
       });
     }
   }

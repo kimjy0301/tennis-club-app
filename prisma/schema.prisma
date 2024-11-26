@@ -17,9 +17,10 @@ model Game {
 }
 
 model Player {
-  id     Int    @id @default(autoincrement())
-  name   String
-  team   String // "A" or "B"
-  game   Game   @relation(fields: [gameId], references: [id])
-  gameId Int
+  id           Int      @id @default(autoincrement())
+  name         String
+  profileImage String?
+  team         String?
+  gameId       Int?
+  game         Game?    @relation(fields: [gameId], references: [id])
 }

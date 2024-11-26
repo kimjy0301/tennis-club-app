@@ -261,9 +261,24 @@ export default function PlayerStats() {
                 key={game.id} 
                 className="bg-white rounded-xl border-2 border-gray-100 p-4 sm:p-6 hover:border-green-100 transition-colors"
               >
-                {/* 날짜 배지 */}
-                <div className="inline-block px-3 py-1 bg-gray-50 rounded-full text-sm text-gray-600 font-medium mb-4">
-                  {formatDate(game.date)}
+                {/* 날짜와 승패 배지 */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="px-3 py-1 bg-gray-50 rounded-full text-sm text-gray-600 font-medium">
+                    {formatDate(game.date)}
+                  </div>
+                  {selectedPlayer && (
+                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      (game.players.some(p => p.name === selectedPlayer && p.team === 'A') && game.scoreTeamA > game.scoreTeamB) ||
+                      (game.players.some(p => p.name === selectedPlayer && p.team === 'B') && game.scoreTeamB > game.scoreTeamA)
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-700'
+                    }`}>
+                      {(game.players.some(p => p.name === selectedPlayer && p.team === 'A') && game.scoreTeamA > game.scoreTeamB) ||
+                       (game.players.some(p => p.name === selectedPlayer && p.team === 'B') && game.scoreTeamB > game.scoreTeamA)
+                        ? '승'
+                        : '패'}
+                    </div>
+                  )}
                 </div>
                 
                 {/* 스코어 카드 */}

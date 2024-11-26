@@ -2,110 +2,45 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import GameCard from '@/components/GameCard';
-import Modal from '@/components/Modal';
 
-interface Player {
+interface RankingData {
+  rank: number;
   name: string;
-  team: 'A' | 'B';
-}
-
-interface Game {
-  id: string;
-  date: string;
-  players: Player[];
-  scoreTeamA: number;
-  scoreTeamB: number;
-}
-
-interface GroupedGames {
-  [key: string]: Game[];
+  totalGames: number;
+  wins: number;
+  losses: number;
+  score: number;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export default function Home() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [games, setGames] = useState<Game[]>([]);
+  const [rankings, setRankings] = useState<RankingData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<'month' | 'all'>('month');
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
-  
-  const selectedDate = searchParams.get('date');
-  const isModalOpen = Boolean(selectedDate);
 
   useEffect(() => {
-    const fetchGames = async () => {
+    const fetchRankings = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/games`);
+        // 최근 1개월 데이터만 가져오기
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        const params = new URLSearchParams({
+          startDate: monthAgo.toISOString(),
+          endDate: new Date().toISOString(),
+        });
+        
+        const response = await fetch(`${API_URL}/api/rankings?${params}`);
         const data = await response.json();
-        setGames(data);
+        setRankings(data);
       } catch (error) {
-        console.error('Error fetching games:', error);
+        console.error('Error fetching rankings:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGames();
+    fetchRankings();
   }, []);
-
-  const filterGamesByDate = (games: Game[]) => {
-    let filteredGames = [...games];
-
-    if (dateRange === 'month') {
-      const monthAgo = new Date();
-      monthAgo.setMonth(monthAgo.getMonth() - 1);
-      filteredGames = games.filter(game => new Date(game.date) >= monthAgo);
-    } else if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      end.setHours(23, 59, 59); // 종료일 마지막 시간으로 설정
-      filteredGames = games.filter(game => {
-        const gameDate = new Date(game.date);
-        return gameDate >= start && gameDate <= end;
-      });
-    }
-
-    return filteredGames;
-  };
-
-  const groupGamesByDate = (games: Game[]): GroupedGames => {
-    return games.reduce((groups: GroupedGames, game) => {
-      const date = new Date(game.date);
-      const dateKey = date.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long'
-      });
-      
-      if (!groups[dateKey]) {
-        groups[dateKey] = [];
-      }
-      groups[dateKey].push(game);
-      return groups;
-    }, {});
-  };
-
-  const filteredGames = filterGamesByDate(games);
-  const groupedGames = groupGamesByDate(filteredGames);
-  const sortedDates = Object.keys(groupedGames).sort((a, b) => {
-    return new Date(b).getTime() - new Date(a).getTime();
-  });
-
-  const handleDateClick = (dateKey: string) => {
-    // URL에 선택된 날짜 추가
-    router.push(`/?date=${encodeURIComponent(dateKey)}`, { scroll: false });
-  };
-
-  const handleCloseModal = () => {
-    // 모달 닫을 때 쿼리 파라미터 제거
-    router.push('/', { scroll: false });
-  };
 
   if (loading) {
     return (
@@ -116,117 +51,122 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto p-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">경기 결과</h1>
-        <Link href="/games/new" className="tennis-button">
-          새 경기 등록
+        <h1 className="text-3xl font-bold text-gray-900">이달의 랭킹</h1>
+        <Link href="/rankings" className="tennis-button">
+          전체 랭킹 보기
         </Link>
       </div>
-       {/* 날짜 필터 */}
-       <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
-        <div className="flex flex-col space-y-4">
-          <div className="flex flex-wrap gap-4">
-            <button
-              onClick={() => setDateRange('month')}
-              className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
-                dateRange === 'month'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              최근 1개월
-            </button>
-            <button
-              onClick={() => setDateRange('all')}
-              className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
-                dateRange === 'all'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              전체 기간
-            </button>
+
+      {/* Top 3 선수 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 md:items-end">
+        {/* 2등 */}
+        <div 
+          key={rankings[1]?.name}
+          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300"
+        >
+          {/* 순위 뱃지 */}
+          <div className="absolute top-4 left-4 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold bg-gray-400">
+            2
           </div>
-          
-          {dateRange === 'all' && (
-            <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="tennis-input w-full sm:w-auto"
-              />
-              <span className="hidden sm:block">~</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="tennis-input w-full sm:w-auto"
-              />
+
+          <div className="mt-4">
+            <h2 className="text-xl font-bold text-gray-900">
+              {rankings[1]?.name}
+            </h2>
+            <p className="text-3xl font-bold my-4 text-green-600">
+              {rankings[1]?.score}점
+            </p>
+            <div className="text-sm text-gray-600">
+              <p>승/패: {rankings[1]?.wins}/{rankings[1]?.losses}</p>
+              <p>참여: {rankings[1]?.totalGames}경기</p>
             </div>
-          )}
+          </div>
+        </div>
+
+        {/* 1등 */}
+        <div 
+          key={rankings[0]?.name}
+          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300 md:-mt-12 md:shadow-xl scale-105 bg-gradient-to-b from-white to-yellow-50"
+        >
+          {/* 순위 뱃지 */}
+          <div className="absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-yellow-400 animate-pulse">
+            1
+          </div>
+
+          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+            <span className="text-2xl">👑</span>
+          </div>
+
+          <div className="mt-4 scale-110">
+            <h2 className="text-2xl font-bold text-green-800">
+              {rankings[0]?.name}
+            </h2>
+            <p className="text-4xl font-bold my-4 text-green-600">
+              {rankings[0]?.score}점
+            </p>
+            <div className="text-sm text-gray-600">
+              <p>승/패: {rankings[0]?.wins}/{rankings[0]?.losses}</p>
+              <p>참여: {rankings[0]?.totalGames}경기</p>
+            </div>
+          </div>
+        </div>
+
+        {/* 3등 */}
+        <div 
+          key={rankings[2]?.name}
+          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300"
+        >
+          {/* 순위 뱃지 */}
+          <div className="absolute top-4 left-4 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold bg-orange-400">
+            3
+          </div>
+
+          <div className="mt-4">
+            <h2 className="text-xl font-bold text-gray-900">
+              {rankings[2]?.name}
+            </h2>
+            <p className="text-3xl font-bold my-4 text-green-600">
+              {rankings[2]?.score}점
+            </p>
+            <div className="text-sm text-gray-600">
+              <p>승/패: {rankings[2]?.wins}/{rankings[2]?.losses}</p>
+              <p>참여: {rankings[2]?.totalGames}경기</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 경기 결과 카드 */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {sortedDates.map((dateKey) => (
-          <button
-            key={dateKey}
-            onClick={() => handleDateClick(dateKey)}
-            className="sport-card p-4 text-left hover:scale-105 transition-all duration-200"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">{dateKey}</h3>
-                <p className="text-sm text-gray-500">
-                  {groupedGames[dateKey].length}경기 진행
-                </p>
-              </div>
-              <span className="text-green-600">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </span>
-            </div>
-          </button>
-        ))}
+      {/* 나머지 랭킹 */}
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">순위</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">선수명</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">점수</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">승/패</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {rankings.slice(3).map((player) => (
+                <tr key={player.name} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{player.rank}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{player.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{player.score}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{player.wins}/{player.losses}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* 모달 유지 */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        title={selectedDate ? `${selectedDate} 경기` : ''}
-      >
-        <div className="divide-y divide-gray-200">
-          {selectedDate && groupedGames[selectedDate]?.map((game, index) => (
-            <GameCard
-              key={game.id}
-              id={game.id}
-              players={game.players}
-              scoreTeamA={game.scoreTeamA}
-              scoreTeamB={game.scoreTeamB}
-              isLastItem={index === groupedGames[selectedDate].length - 1}
-            />
-          ))}
-        </div>
-      </Modal>
-
-      {sortedDates.length === 0 && (
-        <div className="sport-card p-8 text-center text-gray-500">
-          {dateRange === 'all' && (!startDate || !endDate) ? (
-            '조회할 기간을 선택해주세요.'
-          ) : (
-            <>
-              해당 기간에 등록된 경기가 없습니다.
-              <br />
-              <Link href="/games/new" className="text-green-600 hover:text-green-700 mt-2 inline-block">
-                첫 경기를 등록해보세요!
-              </Link>
-            </>
-          )}
+      {rankings.length === 0 && (
+        <div className="bg-white rounded-lg shadow-sm p-8 text-center text-gray-500">
+          등록된 경기 기록이 없습니다.
         </div>
       )}
     </div>
