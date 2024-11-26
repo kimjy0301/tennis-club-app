@@ -1,14 +1,10 @@
 import PlayerDetailClient from './PlayerDetailClient' ;
 
 interface PageProps {
-  params: {
-    id: string;
-  };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: { id: string };
 }
 
-export default function PlayerDetailPage({ params }: PageProps) {
-  const { id } = params;
-  
+export default async function PlayerDetailPage({ params }: PageProps) {
+  const { id } = await Promise.resolve(params);
   return <PlayerDetailClient playerId={id} />;
 }
