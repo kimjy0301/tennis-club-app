@@ -26,8 +26,8 @@ export default function PlayerList() {
       const response = await fetch('/api/players');
       const data = await response.json();
       setPlayers(data);
-    } catch (error) {
-      console.error('Error fetching players:', error);
+    } catch {      
+      setError('Error fetching players:');
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ export default function PlayerList() {
       } else {
         setError('비밀번호가 올바르지 않습니다.');
       }
-    } catch (error) {
+    } catch  {
       setError('인증 과정에서 오류가 발생했습니다.');
     }
   };
