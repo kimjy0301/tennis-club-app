@@ -52,9 +52,44 @@ export default function NewGame() {
     fetchPlayers();
   }, []);
 
+  const validateGameData = (): string | null => {
+    // 모든 선수가 선택되었는지 확인
+    const emptyPlayers = gameData.players.some(player => 
+      player.playerId === 0 || player.name === '' || player.name === '선수 선택'
+    );
+    if (emptyPlayers) {
+      return '모든 선수를 선택해주세요.';
+    }
+
+    // 선수 중복 체크
+    const playerIds = gameData.players.map(player => player.playerId);
+    const uniquePlayerIds = new Set(playerIds);
+    if (playerIds.length !== uniquePlayerIds.size) {
+      return '같은 선수는 중복해서 선택할 수 없습니다.';
+    }
+
+    // 점수 체크
+    if (gameData.scoreTeamA === 0 && gameData.scoreTeamB === 0) {
+      return '0대0 스코어는 입력할 수 없습니다.';
+    }
+
+    // 한 팀이 최소 6점 이상이어야 함
+    if (gameData.scoreTeamA < 6 && gameData.scoreTeamB < 6) {
+      return '한 팀이 최소 6점 이상이어야 합니다.';
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const validationError = validateGameData();
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+
     const transformedData = {
       date: new Date(gameData.date).toISOString(),
       scoreTeamA: gameData.scoreTeamA,
@@ -83,7 +118,7 @@ export default function NewGame() {
       router.push('/');
     } catch (error) {
       console.error('Error creating game:', error);
-      // 여기에 에러 처리 로직 추가 (예: 알림 표시)
+      alert('경기 결과 저장 중 오류가 발생했습니다.');
     }
   };
 
@@ -125,11 +160,15 @@ export default function NewGame() {
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option value="">선수 선택</option>
-                  {players.map((p) => (
-                    <option key={p.id} value={p.name}>
-                      {p.name}
-                    </option>
-                  ))}
+                  {players
+                    .filter(p => !gameData.players.some(
+                      gp => gp.name === p.name && gp.name !== player.name
+                    ))
+                    .map((p) => (
+                      <option key={p.id} value={p.name}>
+                        {p.name}
+                      </option>
+                    ))}
                 </select>
               </div>
             ))}
@@ -167,11 +206,15 @@ export default function NewGame() {
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option value="">선수 선택</option>
-                  {players.map((p) => (
-                    <option key={p.id} value={p.name}>
-                      {p.name}
-                    </option>
-                  ))}
+                  {players
+                    .filter(p => !gameData.players.some(
+                      gp => gp.name === p.name && gp.name !== player.name
+                    ))
+                    .map((p) => (
+                      <option key={p.id} value={p.name}>
+                        {p.name}
+                      </option>
+                    ))}
                 </select>
               </div>
             ))}
