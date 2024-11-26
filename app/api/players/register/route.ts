@@ -1,38 +1,23 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { put } from '@vercel/blob';
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const name = formData.get('name') as string;
-    const profileImage = formData.get('profileImage') as File;
+    const profileImage = formData.get('profileImage') as string;
 
-    if (!name || !profileImage) {
+    if (!name) {
       return NextResponse.json(
-        { error: 'Name and profile image are required' },
+        { error: 'Name is required' },
         { status: 400 }
       );
     }
 
-    // Vercel Blob을 사용하여 이미지 업로드
-    const { url } = await put(`profiles/${Date.now()}-${profileImage.name}`, profileImage, {
-      access: 'public',
-    });
-
-    // DB에 선수 정보 저장 (imageUrl을 Blob URL로 변경)
     const player = await prisma.player.create({
       data: {
         name,
-        profileImage: url, // Blob URL 사용
-        team: 'A',
-        game: {
-          create: {
-            date: new Date(),
-            scoreTeamA: 0,
-            scoreTeamB: 0
-          }
-        }
+        profileImage,
       },
     });
 

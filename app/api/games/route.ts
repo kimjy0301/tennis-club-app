@@ -1,26 +1,35 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+
+    console.log(body);
     
+    // Validate that playerGames array exists
+    if (!body.playerGames || !Array.isArray(body.playerGames)) {
+      return NextResponse.json(
+        { error: 'playerGames array is required' },
+        { status: 400 }
+      );
+    }
+
     const game = await prisma.game.create({
       data: {
         date: new Date(body.date),
         scoreTeamA: body.scoreTeamA,
         scoreTeamB: body.scoreTeamB,
-        players: {
-          create: body.players.map((player: { name: string; team: 'A' | 'B' }) => ({
-            name: player.name,
-            team: player.team,
-          })),
+        playerGames: {
+          create: body.playerGames,
         },
       },
       include: {
-        players: true,
+        playerGames: {
+          include: {
+            player: true
+          }
+        },
       },
     });
 
@@ -38,13 +47,19 @@ export async function GET() {
   try {
     const games = await prisma.game.findMany({
       include: {
-        players: true,
+        playerGames: {
+          include: {
+            player: true
+          }
+        },
       },
       orderBy: {
         date: 'desc',
       },
     });
 
+
+    
     return NextResponse.json(games);
   } catch (error) {
     console.error('Error fetching games:', error);

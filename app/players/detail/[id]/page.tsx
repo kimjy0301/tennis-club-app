@@ -130,6 +130,7 @@ export default function PlayerDetail() {
                       src={imagePreview}
                       alt="Profile preview"
                       fill
+                      sizes="100vw"
                       className="rounded-full object-cover"
                     />
                   </div>

@@ -19,7 +19,11 @@ export async function GET(request: Request) {
     const games = await prisma.game.findMany({
       where: whereCondition,
       include: {
-        players: true,
+        playerGames: {
+          include: {
+            player: true
+          }
+        },
       },
     });
 
@@ -27,9 +31,11 @@ export async function GET(request: Request) {
     const playerStats = new Map();
 
     games.forEach(game => {
-      game.players.forEach(player => {
+      game.playerGames.forEach(playerGame => {
+        const player = playerGame.player;
         const stats = playerStats.get(player.name) || {
           name: player.name,
+          profileImage: player.profileImage,
           totalGames: 0,
           wins: 0,
           losses: 0,
@@ -38,7 +44,7 @@ export async function GET(request: Request) {
 
         stats.totalGames++;
         const isTeamAWinner = game.scoreTeamA > game.scoreTeamB;
-        if ((player.team === 'A' && isTeamAWinner) || (player.team === 'B' && !isTeamAWinner)) {
+        if ((playerGame.team === 'A' && isTeamAWinner) || (playerGame.team === 'B' && !isTeamAWinner)) {
           stats.wins++;
         } else {
           stats.losses++;

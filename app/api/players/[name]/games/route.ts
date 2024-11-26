@@ -11,21 +11,12 @@ export async function GET(
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
 
-    // 날짜 필터 조건 추가
-    const whereCondition: {
-      players?: {
+    const whereCondition: any = {
+      playerGames: {
         some: {
-          name: string;
-        };
-      };
-      date?: {
-        gte: Date;
-        lte: Date;
-      };
-    } = {
-      players: {
-        some: {
-          name: decodeURIComponent(name)
+          player: {
+            name: decodeURIComponent(name)
+          }
         }
       }
     };
@@ -40,7 +31,11 @@ export async function GET(
     const games = await prisma.game.findMany({
       where: whereCondition,
       include: {
-        players: true
+        playerGames: {
+          include: {
+            player: true
+          }
+        }
       },
       orderBy: {
         date: 'desc'

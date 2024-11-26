@@ -12,15 +12,23 @@ model Game {
   date       DateTime
   scoreTeamA Int
   scoreTeamB Int
-  createdAt  DateTime @default(now())
-  players    Player[]
+  playerGames PlayerGame[]
 }
 
 model Player {
-  id           Int      @id @default(autoincrement())
-  name         String
+  id         Int         @id @default(autoincrement())
+  name       String
   profileImage String?
-  team         String?
-  gameId       Int?
-  game         Game?    @relation(fields: [gameId], references: [id])
+  playerGames PlayerGame[]
+}
+
+model PlayerGame {
+  id       Int      @id @default(autoincrement())
+  player   Player   @relation(fields: [playerId], references: [id])
+  playerId Int
+  game     Game     @relation(fields: [gameId], references: [id])
+  gameId   Int
+  team     String
+
+  @@unique([playerId, gameId])
 }

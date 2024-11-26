@@ -10,6 +10,7 @@ interface RankingData {
   wins: number;
   losses: number;
   score: number;
+  profileImage?: string;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -31,6 +32,8 @@ export default function Home() {
         
         const response = await fetch(`${API_URL}/api/rankings?${params}`);
         const data = await response.json();
+
+        console.log(data);
         setRankings(data);
       } catch (error) {
         console.error('Error fetching rankings:', error);
@@ -71,6 +74,15 @@ export default function Home() {
             2
           </div>
 
+          {/* 프로필 이미지 추가 */}
+          <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-gray-200">
+            <img 
+              src={rankings[1]?.profileImage || '/default-profile.png'} 
+              alt={`${rankings[1]?.name} 프로필`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+
           <div className="mt-4">
             <h2 className="text-xl font-bold text-gray-900">
               {rankings[1]?.name}
@@ -98,7 +110,14 @@ export default function Home() {
           <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
             <span className="text-2xl">👑</span>
           </div>
-
+          {/* 프로필 이미지 추가 */}
+          <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-gray-200">
+            <img 
+              src={rankings[0]?.profileImage || '/default-profile.png'} 
+              alt={`${rankings[0]?.name} 프로필`}
+              className="w-full h-full object-cover"
+            />
+          </div>
           <div className="mt-4 scale-110">
             <h2 className="text-2xl font-bold text-green-800">
               {rankings[0]?.name}
@@ -122,7 +141,14 @@ export default function Home() {
           <div className="absolute top-4 left-4 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold bg-orange-400">
             3
           </div>
-
+          {/* 프로필 이미지 추가 */}
+          <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-gray-200">
+            <img 
+              src={rankings[2]?.profileImage || '/default-profile.png'} 
+              alt={`${rankings[2]?.name} 프로필`}
+              className="w-full h-full object-cover"
+            />
+          </div>
           <div className="mt-4">
             <h2 className="text-xl font-bold text-gray-900">
               {rankings[2]?.name}

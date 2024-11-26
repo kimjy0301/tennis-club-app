@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Modal from '@/components/Modal';
+import Image from 'next/image';
 
 interface PlayerStats {
   name: string;
@@ -9,6 +10,7 @@ interface PlayerStats {
   wins: number;
   losses: number;
   winRate: number;
+  profileImage?: string;
 }
 
 interface Game {
@@ -16,9 +18,12 @@ interface Game {
   date: string;
   scoreTeamA: number;
   scoreTeamB: number;
-  players: {
-    name: string;
-    team: 'A' | 'B';
+  playerGames: {
+    player: {
+      name: string;
+      profileImage?: string;
+    };
+    team: string;
   }[];
 }
 
@@ -201,7 +206,17 @@ export default function PlayerStats() {
             onClick={() => handlePlayerClick(player.name)}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">{player.name}</h2>
+              <div className="flex items-center gap-3">
+                <div className="relative w-10 h-10">
+                  <Image
+                    src={player.profileImage || '/default-profile.png'} 
+                    alt={player.name}
+                    fill
+                    className="rounded-full object-cover"
+                  />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">{player.name}</h2>
+              </div>
               <span className="tennis-ball text-2xl">🎾</span>
             </div>
             
@@ -268,13 +283,13 @@ export default function PlayerStats() {
                   </div>
                   {selectedPlayer && (
                     <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      (game.players.some(p => p.name === selectedPlayer && p.team === 'A') && game.scoreTeamA > game.scoreTeamB) ||
-                      (game.players.some(p => p.name === selectedPlayer && p.team === 'B') && game.scoreTeamB > game.scoreTeamA)
+                      (game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'A') && game.scoreTeamA > game.scoreTeamB) ||
+                      (game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'B') && game.scoreTeamB > game.scoreTeamA)
                         ? 'bg-green-100 text-green-700'
                         : 'bg-red-100 text-red-700'
                     }`}>
-                      {(game.players.some(p => p.name === selectedPlayer && p.team === 'A') && game.scoreTeamA > game.scoreTeamB) ||
-                       (game.players.some(p => p.name === selectedPlayer && p.team === 'B') && game.scoreTeamB > game.scoreTeamA)
+                      {(game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'A') && game.scoreTeamA > game.scoreTeamB) ||
+                       (game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'B') && game.scoreTeamB > game.scoreTeamA)
                         ? '승'
                         : '패'}
                     </div>
@@ -288,7 +303,7 @@ export default function PlayerStats() {
                     <div className="flex-1 text-center">
                       <div className="text-sm font-medium text-gray-500 mb-1 sm:mb-2">A팀</div>
                       <div className={`text-2xl sm:text-3xl font-bold ${
-                        (selectedPlayer && game.players.some(p => p.name === selectedPlayer && p.team === 'A')) 
+                        (selectedPlayer && game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'A')) 
                           ? 'text-green-600' 
                           : 'text-gray-700'
                       }`}>
@@ -307,7 +322,7 @@ export default function PlayerStats() {
                     <div className="flex-1 text-center">
                       <div className="text-sm font-medium text-gray-500 mb-1 sm:mb-2">B팀</div>
                       <div className={`text-2xl sm:text-3xl font-bold ${
-                        (selectedPlayer && game.players.some(p => p.name === selectedPlayer && p.team === 'B')) 
+                        (selectedPlayer && game.playerGames.some(pg => pg.player.name === selectedPlayer && pg.team === 'B')) 
                           ? 'text-green-600' 
                           : 'text-gray-700'
                       }`}>
@@ -325,18 +340,18 @@ export default function PlayerStats() {
                       A팀 선수
                     </div>
                     <div className="space-y-2">
-                      {game.players
-                        .filter(p => p.team === 'A')
-                        .map(p => (
+                      {game.playerGames
+                        .filter(pg => pg.team === 'A')
+                        .map(pg => (
                           <div 
-                            key={p.name}
+                            key={pg.player.name}
                             className={`px-3 py-1 rounded-full text-sm ${
-                              p.name === selectedPlayer 
+                              pg.player.name === selectedPlayer 
                                 ? 'bg-green-100 text-green-700 font-medium' 
                                 : 'bg-white text-gray-600'
                             }`}
                           >
-                            {p.name}
+                            {pg.player.name}
                           </div>
                         ))
                       }
@@ -349,18 +364,18 @@ export default function PlayerStats() {
                       B팀 선수
                     </div>
                     <div className="space-y-2">
-                      {game.players
-                        .filter(p => p.team === 'B')
-                        .map(p => (
+                      {game.playerGames
+                        .filter(pg => pg.team === 'B')
+                        .map(pg => (
                           <div 
-                            key={p.name}
+                            key={pg.player.name}
                             className={`px-3 py-1 rounded-full text-sm ${
-                              p.name === selectedPlayer 
+                              pg.player.name === selectedPlayer 
                                 ? 'bg-green-100 text-green-700 font-medium' 
                                 : 'bg-white text-gray-600'
                             }`}
                           >
-                            {p.name}
+                            {pg.player.name}
                           </div>
                         ))
                       }

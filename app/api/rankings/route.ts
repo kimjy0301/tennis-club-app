@@ -19,60 +19,52 @@ export async function GET(request: Request) {
     const games = await prisma.game.findMany({
       where: whereCondition,
       include: {
-        players: true,
-      },
-      orderBy: {
-        date: 'desc',
+        playerGames: {
+          include: {
+            player: true
+          }
+        },
       },
     });
 
-    // 선수별 점수 계산
-    const playerScores = new Map();
-    // 선수별 출석일 추적
-    const playerAttendanceDates = new Map();
+    // 선수별 통계 계산
+    const playerStats = new Map();
 
     games.forEach(game => {
-      const gameDate = game.date.toDateString(); // 날짜만 비교하기 위해 시간 제거
-
-      game.players.forEach(player => {
-        const currentScore = playerScores.get(player.name) || {
+      game.playerGames.forEach(playerGame => {
+        const player = playerGame.player;
+        const stats = playerStats.get(player.id) || {
+          id: player.id,
           name: player.name,
+          profileImage: player.profileImage,
           totalGames: 0,
           wins: 0,
           losses: 0,
           score: 0,
         };
 
-        // 해당 선수의 출석일 Set 가져오기
-        const attendanceDates = playerAttendanceDates.get(player.name) || new Set();
-        
-        // 해당 날짜에 처음 출석한 경우에만 출석 점수 +2
-        if (!attendanceDates.has(gameDate)) {
-          currentScore.score += 2;
-          attendanceDates.add(gameDate);
-        }
-
-        currentScore.totalGames++;
+        // 출석 점수 +2
+        stats.score += 2;
+        stats.totalGames++;
 
         const isTeamAWinner = game.scoreTeamA > game.scoreTeamB;
-        if ((player.team === 'A' && isTeamAWinner) || 
-            (player.team === 'B' && !isTeamAWinner)) {
+        if ((playerGame.team === 'A' && isTeamAWinner) || 
+            (playerGame.team === 'B' && !isTeamAWinner)) {
           // 승리 점수 +3
-          currentScore.score += 3;
-          currentScore.wins++;
+          stats.score += 3;
+          stats.wins++;
         } else {
           // 패배 점수 +1
-          currentScore.score += 1;
-          currentScore.losses++;
+          stats.score += 1;
+          stats.losses++;
         }
 
-        playerScores.set(player.name, currentScore);
-        playerAttendanceDates.set(player.name, attendanceDates);
+        playerStats.set(player.id, stats);
       });
     });
 
     // Map을 배열로 변환하고 점수 기준으로 정렬
-    const rankings = Array.from(playerScores.values())
+    const rankings = Array.from(playerStats.values())
       .sort((a, b) => b.score - a.score)
       .map((player, index) => ({
         ...player,

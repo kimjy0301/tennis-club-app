@@ -7,16 +7,25 @@ import GameCard from '@/components/GameCard';
 import Modal from '@/components/Modal';
 
 interface Player {
+  id: number;
   name: string;
-  team: 'A' | 'B';
+  profileImage?: string;
+}
+
+interface PlayerGame {
+  id: number;
+  player: Player;
+  playerId: number;
+  gameId: number;
+  team: string;
 }
 
 interface Game {
-  id: string;
+  id: number;
   date: string;
-  players: Player[];
   scoreTeamA: number;
   scoreTeamB: number;
+  playerGames: PlayerGame[];
 }
 
 interface GroupedGames {
@@ -103,7 +112,7 @@ export default function Home() {
   };
 
   const handleCloseModal = () => {
-    // 모달 닫을 때 쿼리 파라미터 제거
+    // 모달 닫을 때 쿼리 파라미 제거
     router.push('/', { scroll: false });
   };
 
@@ -205,7 +214,7 @@ export default function Home() {
             <GameCard
               key={game.id}
               id={game.id}
-              players={game.players}
+              playerGames={game.playerGames}
               scoreTeamA={game.scoreTeamA}
               scoreTeamB={game.scoreTeamB}
               isLastItem={index === groupedGames[selectedDate].length - 1}

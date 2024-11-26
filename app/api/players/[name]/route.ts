@@ -49,7 +49,6 @@ export async function PUT(
       });
       imageUrl = url;
 
-      console.log(imageUrl);
     }
 
     const player = await prisma.player.update({

@@ -3,9 +3,8 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const players = [
-  '김성라', '이성라', '박성라', '최성라', '정성라',
-  '강성라', '조성라', '윤성라', '장성라', '임성라', '문성라'
-  , '관성라', '강성라', '우성라', '한성라', '최성라', '유성라'
+  '김지용', '홍원준', '송인숙', '장경철', '윤진아', '최윤아', '임기호', '박정환', '강미경', '풍주윤', '정병현', '설형남', '윤윤주', '남궁규영', '추재근', '한신영', '성영연', '홍석연', '고시환', '임보아', '남종훈', '남궁원빈', '배경수', '안현아', '안혜은', '양영빈', '장은혁', '심성준', '정승기', '전영재', '한석호'  
+
 ];
 
 async function main() {
@@ -52,22 +51,34 @@ async function main() {
         skip: Math.floor(Math.random() * (players.length - 3)), // 랜덤하게 선수 선택
       });
 
-      // 선수들을 게임에 할당
-      await prisma.player.update({
-        where: { id: randomPlayers[0].id },
-        data: { team: 'A', gameId: game.id },
+      // 선수들을 게임에 할당 (수정된 부분)
+      await prisma.playerGame.create({
+        data: {
+          playerId: randomPlayers[0].id,
+          gameId: game.id,
+          team: 'A'
+        }
       });
-      await prisma.player.update({
-        where: { id: randomPlayers[1].id },
-        data: { team: 'A', gameId: game.id },
+      await prisma.playerGame.create({
+        data: {
+          playerId: randomPlayers[1].id,
+          gameId: game.id,
+          team: 'A'
+        }
       });
-      await prisma.player.update({
-        where: { id: randomPlayers[2].id },
-        data: { team: 'B', gameId: game.id },
+      await prisma.playerGame.create({
+        data: {
+          playerId: randomPlayers[2].id,
+          gameId: game.id,
+          team: 'B'
+        }
       });
-      await prisma.player.update({
-        where: { id: randomPlayers[3].id },
-        data: { team: 'B', gameId: game.id },
+      await prisma.playerGame.create({
+        data: {
+          playerId: randomPlayers[3].id,
+          gameId: game.id,
+          team: 'B'
+        }
       });
     }
   }

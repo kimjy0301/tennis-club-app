@@ -4,18 +4,18 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Player {
+  id: number;
   name: string;
-  team: 'A' | 'B';
+  profileImage?: string;
 }
 
-interface PlayerFromDB {
-  id: string;
-  name: string;
-}
-
-interface GameResult {
+interface GameData {
   date: string;
-  players: Player[];
+  players: {
+    playerId: number;
+    name: string;
+    team: 'A' | 'B';
+  }[];
   scoreTeamA: number;
   scoreTeamB: number;
 }
@@ -24,14 +24,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export default function NewGame() {
   const router = useRouter();
-  const [players, setPlayers] = useState<PlayerFromDB[]>([]);
-  const [gameData, setGameData] = useState<GameResult>({
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [gameData, setGameData] = useState<GameData>({
     date: new Date().toISOString().split('T')[0],
     players: [
-      { name: '', team: 'A' },
-      { name: '', team: 'A' },
-      { name: '', team: 'B' },
-      { name: '', team: 'B' }
+      { playerId: 0, name: '', team: 'A' },
+      { playerId: 0, name: '', team: 'A' },
+      { playerId: 0, name: '', team: 'B' },
+      { playerId: 0, name: '', team: 'B' }
     ],
     scoreTeamA: 0,
     scoreTeamB: 0
@@ -55,14 +55,25 @@ export default function NewGame() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const transformedData = {
+      date: new Date(gameData.date).toISOString(),
+      scoreTeamA: gameData.scoreTeamA,
+      scoreTeamB: gameData.scoreTeamB,
+      playerGames: gameData.players.map(player => ({
+        playerId: player.playerId,
+        team: player.team
+      }))
+    };
+
     try {
       const response = await fetch(`${API_URL}/api/games`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(gameData),
+        body: JSON.stringify(transformedData),
       });
+      
 
       if (!response.ok) {
         throw new Error('Failed to create game');
@@ -101,8 +112,14 @@ export default function NewGame() {
                 <select
                   value={player.name}
                   onChange={(e) => {
+                    const selectedPlayer = players.find(p => p.name === e.target.value);
                     const newPlayers = [...gameData.players];
-                    newPlayers[idx].name = e.target.value;
+                    const playerIndex = idx + (player.team === 'B' ? 2 : 0);
+                    newPlayers[playerIndex] = {
+                      ...newPlayers[playerIndex],
+                      playerId: selectedPlayer?.id || 0,
+                      name: e.target.value
+                    };
                     setGameData({...gameData, players: newPlayers});
                   }}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -137,8 +154,14 @@ export default function NewGame() {
                 <select
                   value={player.name}
                   onChange={(e) => {
+                    const selectedPlayer = players.find(p => p.name === e.target.value);
                     const newPlayers = [...gameData.players];
-                    newPlayers[idx + 2].name = e.target.value;
+                    const playerIndex = idx + (player.team === 'B' ? 2 : 0);
+                    newPlayers[playerIndex] = {
+                      ...newPlayers[playerIndex],
+                      playerId: selectedPlayer?.id || 0,
+                      name: e.target.value
+                    };
                     setGameData({...gameData, players: newPlayers});
                   }}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"

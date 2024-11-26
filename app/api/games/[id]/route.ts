@@ -7,13 +7,15 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const intId = parseInt(id);
-    
     const game = await prisma.game.findUnique({
-      where: { id: intId },
+      where: { id: parseInt(id) },
       include: {
-        players: true,
-      },
+        playerGames: {
+          include: {
+            player: true
+          }
+        }
+      }
     });
 
     if (!game) {
@@ -39,10 +41,15 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const intId = parseInt(id);
+    
+    // 게임과 관련된 모든 playerGame 레코드를 먼저 삭제
+    await prisma.playerGame.deleteMany({
+      where: { gameId: parseInt(id) },
+    });
 
+    // 게임 삭제
     await prisma.game.delete({
-      where: { id: intId },
+      where: { id: parseInt(id) },
     });
 
     return NextResponse.json({ message: 'Game deleted successfully' });

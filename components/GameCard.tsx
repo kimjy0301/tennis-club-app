@@ -1,19 +1,33 @@
 import Link from 'next/link';
 
 interface Player {
+  id: number;
   name: string;
-  team: 'A' | 'B';
+  profileImage?: string;
+}
+
+interface PlayerGame {
+  id: number;
+  player: Player;
+  playerId: number;
+  gameId: number;
+  team: string;
 }
 
 interface GameCardProps {
-  id: string;
-  players: Player[];
+  id: number;
+  playerGames: PlayerGame[];
   scoreTeamA: number;
   scoreTeamB: number;
   isLastItem: boolean;
 }
 
-export default function GameCard({ id, players, scoreTeamA, scoreTeamB, isLastItem }: GameCardProps) {
+export default function GameCard({ id, playerGames = [], scoreTeamA, scoreTeamB, isLastItem }: GameCardProps) {
+
+
+  console.log("!!!!");
+  console.log(playerGames);
+
   return (
     <Link
       href={`/games/${id}`}
@@ -26,11 +40,10 @@ export default function GameCard({ id, players, scoreTeamA, scoreTeamB, isLastIt
           {/* A팀 (왼쪽) */}
           <div className="col-span-3 text-right">
             <div className="space-y-0.5 sm:space-y-1">
-              {players
-                .filter(p => p.team === 'A')
-                .map((player, idx) => (
-                  <div key={idx} className="text-gray-700 text-sm sm:text-base truncate">
-                    {player.name}
+              {playerGames?.filter(pg => pg.team === 'A')
+                .map((playerGame, idx) => (
+                  <div key={playerGame.id} className="text-gray-700 text-sm sm:text-base truncate">
+                    {playerGame.player.name}
                   </div>
                 ))}
             </div>
@@ -53,11 +66,10 @@ export default function GameCard({ id, players, scoreTeamA, scoreTeamB, isLastIt
           {/* B팀 (오른쪽) */}
           <div className="col-span-3 text-left">
             <div className="space-y-0.5 sm:space-y-1">
-              {players
-                .filter(p => p.team === 'B')
-                .map((player, idx) => (
-                  <div key={idx} className="text-gray-700 text-sm sm:text-base truncate">
-                    {player.name}
+              {playerGames?.filter(pg => pg.team === 'B')
+                .map((playerGame, idx) => (
+                  <div key={playerGame.id} className="text-gray-700 text-sm sm:text-base truncate">
+                    {playerGame.player.name}
                   </div>
                 ))}
             </div>

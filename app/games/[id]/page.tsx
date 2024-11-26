@@ -4,14 +4,21 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 interface Player {
+  id: number;
   name: string;
-  team: 'A' | 'B';
+  profileImage?: string;
+}
+
+interface PlayerGame {
+  id: number;
+  player: Player;
+  team: string;
 }
 
 interface GameResult {
-  id: string;
+  id: number;
   date: string;
-  players: Player[];
+  playerGames: PlayerGame[];
   scoreTeamA: number;
   scoreTeamB: number;
 }
@@ -144,11 +151,11 @@ export default function GameDetail() {
             <div className={`p-4 rounded-lg ${winningTeam === 'A' ? 'bg-blue-50' : 'bg-gray-50'}`}>
               <h2 className="text-xl font-semibold mb-4">A팀 선수</h2>
               <div className="space-y-2">
-                {game.players
-                  .filter(p => p.team === 'A')
-                  .map((player, idx) => (
-                    <div key={idx} className="bg-white p-3 rounded-lg shadow-sm">
-                      {player.name}
+                {game.playerGames
+                  .filter(pg => pg.team === 'A')
+                  .map((playerGame, idx) => (
+                    <div key={playerGame.id} className="bg-white p-3 rounded-lg shadow-sm">
+                      {playerGame.player.name}
                     </div>
                   ))}
               </div>
@@ -157,11 +164,11 @@ export default function GameDetail() {
             <div className={`p-4 rounded-lg ${winningTeam === 'B' ? 'bg-blue-50' : 'bg-gray-50'}`}>
               <h2 className="text-xl font-semibold mb-4">B팀 선수</h2>
               <div className="space-y-2">
-                {game.players
-                  .filter(p => p.team === 'B')
-                  .map((player, idx) => (
-                    <div key={idx} className="bg-white p-3 rounded-lg shadow-sm">
-                      {player.name}
+                {game.playerGames
+                  .filter(pg => pg.team === 'B')
+                  .map((playerGame, idx) => (
+                    <div key={playerGame.id} className="bg-white p-3 rounded-lg shadow-sm">
+                      {playerGame.player.name}
                     </div>
                   ))}
               </div>

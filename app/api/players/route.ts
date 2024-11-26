@@ -4,10 +4,11 @@ import { prisma } from '@/lib/prisma';
 export async function GET() {
   try {
     const players = await prisma.player.findMany({
-      select: {
-        id: true,
-        name: true,
-        profileImage: true,
+      include: {
+        playerGames: true
+      },
+      orderBy: {
+        name: 'asc'
       }
     });
 
