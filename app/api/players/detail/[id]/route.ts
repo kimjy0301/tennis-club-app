@@ -73,10 +73,10 @@ export async function PUT(
 // DELETE - 선수 삭제
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<    { id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     // 선수가 존재하는지 확인
     const existingPlayer = await prisma.player.findUnique({
@@ -111,11 +111,11 @@ export async function DELETE(
 // PATCH - 선수 정보 부분 수정
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const formData = await request.formData();
-    const { id } = params;
+    const { id } = await params;
     
     const updateData: {
       name?: string;
