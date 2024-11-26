@@ -114,9 +114,12 @@ export default function Home() {
         {/* 1등 */}
         <div 
           key={rankings[0]?.name}
-          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300 mb-6 bg-gradient-to-b from-yellow-50 to-white cursor-pointer hover:scale-105"
+          className="sport-card pt-10 pb-6 px-6 text-center relative overflow-visible transition-all duration-300 mb-6 bg-gradient-to-b from-yellow-50 to-white cursor-pointer hover:scale-105"
           onClick={() => rankings[0]?.id && handlePlayerClick(rankings[0].id)}
         >
+          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 text-4xl animate-bounce z-50">
+            👑
+          </div>
           <div className="absolute inset-0 bg-gradient-to-b from-yellow-200/20 to-transparent"></div>
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-300"></div>
           
@@ -227,9 +230,12 @@ export default function Home() {
         {/* 1등 */}
         <div 
           key={rankings[0]?.name}
-          className="sport-card p-6 text-center relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-yellow-50 to-white cursor-pointer hover:scale-105"
+          className="sport-card pt-10 pb-6 px-6 text-center relative overflow-visible transition-all duration-300 bg-gradient-to-b from-yellow-50 to-white cursor-pointer hover:scale-105"
           onClick={() => rankings[0]?.id && handlePlayerClick(rankings[0].id)}
         >
+          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 text-4xl animate-bounce z-50">
+            👑
+          </div>
           {/* 순위 뱃지 */}
           <div className="absolute top-4 left-4 w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-yellow-400 animate-pulse text-xl shadow-lg">
             1
