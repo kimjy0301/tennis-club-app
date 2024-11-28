@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,12 +11,11 @@ export default function Navbar() {
   const isActivePath = (path: string) => pathname === path;
 
   const navLinks = [
-    { href: '/', label: '홈' },
-    { href: '/games', label: '경기 기록' },
-    { href: '/players/list', label: '선수 목록' },
-    { href: '/versus', label: '상대 전적' },
-    { href: '/rankings', label: '전체 랭킹' },
-    { href: '/games/new', label: '경기 등록' },
+    { href: "/games", label: "경기 결과" },
+    { href: "/versus", label: "상대 전적" },
+    { href: "/rankings", label: "전체 랭킹" },
+    { href: "/games/new", label: "경기 등록" },
+    { href: "/players/list", label: "선수 목록" },
   ];
 
   return (
@@ -25,7 +24,10 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           {/* 로고 */}
           <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-white hover:text-green-100 transition-colors">
+            <Link
+              href="/"
+              className="text-xl font-bold text-white hover:text-green-100 transition-colors"
+            >
               클럽 매칭 테스트
             </Link>
           </div>
@@ -38,8 +40,8 @@ export default function Navbar() {
                 href={link.href}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   isActivePath(link.href)
-                    ? 'bg-green-700 text-white shadow-inner'
-                    : 'text-green-100 hover:bg-green-500/30'
+                    ? "bg-green-700 text-white shadow-inner"
+                    : "text-green-100 hover:bg-green-500/30"
                 }`}
               >
                 {link.label}
@@ -57,7 +59,7 @@ export default function Navbar() {
             >
               <span className="sr-only">메뉴 열기</span>
               <svg
-                className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`}
+                className={`${isMenuOpen ? "hidden" : "block"} h-6 w-6`}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -71,7 +73,7 @@ export default function Navbar() {
                 />
               </svg>
               <svg
-                className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`}
+                className={`${isMenuOpen ? "block" : "hidden"} h-6 w-6`}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -90,7 +92,9 @@ export default function Navbar() {
       </div>
 
       {/* 모바일 메뉴 */}
-      <div className={`${isMenuOpen ? 'block' : 'hidden'} md:hidden bg-green-700`}>
+      <div
+        className={`${isMenuOpen ? "block" : "hidden"} md:hidden bg-green-700`}
+      >
         <div className="px-2 pt-2 pb-3 space-y-1">
           {navLinks.map((link) => (
             <Link
@@ -98,8 +102,8 @@ export default function Navbar() {
               href={link.href}
               className={`block px-3 py-2 rounded-md text-base font-medium ${
                 isActivePath(link.href)
-                  ? 'bg-green-600 text-white'
-                  : 'text-green-100 hover:bg-green-500/30 hover:text-white'
+                  ? "bg-green-600 text-white"
+                  : "text-green-100 hover:bg-green-500/30 hover:text-white"
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
@@ -110,4 +114,4 @@ export default function Navbar() {
       </div>
     </nav>
   );
-} 
+}

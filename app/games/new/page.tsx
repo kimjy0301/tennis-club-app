@@ -106,16 +106,17 @@ export default function NewGame() {
         {/* 날짜 선택 */}
 
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            경기 날짜
-          </label>
-
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="tennis-input w-full text-lg py-3"
-          />
+          <div>
+            <span className="block text-sm font-medium text-gray-700 mb-1">
+              경기 날짜
+            </span>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="tennis-input w-full text-lg py-3"
+            />
+          </div>
         </div>
 
         {/* 점수 입력 */}

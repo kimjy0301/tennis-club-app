@@ -162,21 +162,29 @@ export default function Home() {
 
           {dateRange === "all" && (
             <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                placeholder="시작일"
-                className="tennis-input w-full sm:w-auto text-gray-700 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit-fields-wrapper]:p-0"
-              />
+              <div className="w-full sm:w-auto">
+                <span className="block text-sm font-medium text-gray-700 mb-1">
+                  시작일
+                </span>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="tennis-input w-full"
+                />
+              </div>
               <span className="hidden sm:block">~</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                placeholder="종료일"
-                className="tennis-input w-full sm:w-auto text-gray-700 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit-fields-wrapper]:p-0"
-              />
+              <div className="w-full sm:w-auto">
+                <span className="block text-sm font-medium text-gray-700 mb-1">
+                  종료일
+                </span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="tennis-input w-full"
+                />
+              </div>
             </div>
           )}
         </div>
