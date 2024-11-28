@@ -113,7 +113,7 @@ export default function Home() {
 
   const handleCloseModal = () => {
     // 모달 닫을 때 쿼리 파라미 제거
-    router.push('/', { scroll: false });
+    router.push('/games', { scroll: false });
   };
 
   if (loading) {

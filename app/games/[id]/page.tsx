@@ -86,7 +86,7 @@ export default function GameDetail() {
 
   const handleBackToList = () => {
     if (previousDate) {
-      router.push(`/?date=${encodeURIComponent(previousDate)}`);
+      router.push(`/games?date=${encodeURIComponent(previousDate)}`);
     } else {
       router.push('/');
     }
