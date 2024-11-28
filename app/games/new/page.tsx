@@ -2,10 +2,6 @@
 
 import { useState, useEffect } from "react";
 
-import { useRouter } from "next/navigation";
-
-import { Toaster, toast } from "react-hot-toast";
-
 interface Player {
   id: number;
 
@@ -13,7 +9,6 @@ interface Player {
 }
 
 export default function NewGame() {
-  const router = useRouter();
 
   const [players, setPlayers] = useState<Player[]>([]);
 
@@ -30,6 +25,8 @@ export default function NewGame() {
   const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState("");
+
+  const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
     fetchPlayers();
@@ -84,7 +81,8 @@ export default function NewGame() {
       setTeamA([]);
       setTeamB([]);
 
-      toast.success("경기가 성공적으로 등록되었습니다!");
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
     } catch {
       setError("경기 등록에 실패했습니다.");
     } finally {
@@ -108,7 +106,11 @@ export default function NewGame() {
   
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <Toaster position="top-center" />
+      {showNotification && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transition-opacity duration-300">
+          경기가 성공적으로 등록되었습니다!
+        </div>
+      )}
       <h1 className="text-3xl font-bold text-gray-900 mb-8">경기 등록</h1>
 
       <form onSubmit={handleSubmit} className="space-y-8">
