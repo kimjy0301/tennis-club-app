@@ -13,7 +13,8 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: '홈' },
     { href: '/games', label: '경기 기록' },
-    { href: '/players', label: '선수별 기록' },
+    { href: '/players/list', label: '선수 목록' },
+    { href: '/versus', label: '상대 전적' },
     { href: '/rankings', label: '전체 랭킹' },
     { href: '/games/new', label: '경기 등록' },
   ];
