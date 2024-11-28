@@ -107,7 +107,7 @@ export default function NewGame() {
   return (
     <div className="max-w-4xl mx-auto p-4">
       {showNotification && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transition-opacity duration-300">
+        <div className="fixed inset-x-0 top-4 mx-auto w-fit bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transition-opacity duration-300">
           경기가 성공적으로 등록되었습니다!
         </div>
       )}
