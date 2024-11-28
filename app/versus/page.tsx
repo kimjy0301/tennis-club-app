@@ -152,7 +152,7 @@ export default function VersusPage() {
             onChange={(e) => setPlayer1Id(Number(e.target.value))}
             className="tennis-input w-full"
           >
-            <option value="">선수를 선택하세요</option>
+            <option value="">선수 선택</option>
             {players.map((player) => (
               <option key={player.id} value={player.id}>
                 {player.name}
@@ -171,7 +171,7 @@ export default function VersusPage() {
             onChange={(e) => setPlayer2Id(Number(e.target.value))}
             className="tennis-input w-full"
           >
-            <option value="">선수를 선택하세요</option>
+            <option value="">선수 선택</option>
             {players
               .filter((player) => player.id !== player1Id)
               .map((player) => (
