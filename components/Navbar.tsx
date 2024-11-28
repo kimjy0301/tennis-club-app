@@ -26,7 +26,7 @@ export default function Navbar() {
           {/* 로고 */}
           <div className="flex items-center">
             <Link href="/" className="text-xl font-bold text-white hover:text-green-100 transition-colors">
-              성라클럽
+              클럽 매칭 테스트
             </Link>
           </div>
 
