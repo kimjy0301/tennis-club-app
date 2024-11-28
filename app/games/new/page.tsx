@@ -30,9 +30,9 @@ export default function NewGame() {
 
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
-  const [scoreA, setScoreA] = useState(0);
+  const [scoreA, setScoreA] = useState<number | ''>('');
 
-  const [scoreB, setScoreB] = useState(0);
+  const [scoreB, setScoreB] = useState<number | ''>('');
 
   const [loading, setLoading] = useState(false);
 
@@ -198,19 +198,73 @@ export default function NewGame() {
 
               <label className="block text-sm font-medium text-gray-700 mb-2">A팀</label>
 
-              <input
+              <div className="flex items-center">
 
-                type="number"
+                <div className="flex flex-col gap-1">
 
-                min="0"
+                  <button
 
-                value={scoreA}
+                    type="button"
 
-                onChange={(e) => setScoreA(parseInt(e.target.value) || 0)}
+                    onClick={() => setScoreA(prev => {
 
-                className="tennis-input w-full text-center text-2xl py-3"
+                      if (prev === '' || prev === undefined) return 1;
 
-              />
+                      return prev < 6 ? prev + 1 : prev;
+
+                    })}
+
+                    className="tennis-button h-6 w-6 flex items-center justify-center text-sm rounded-t"
+
+                  >
+
+                    ▲
+
+                  </button>
+
+                  <button
+
+                    type="button"
+
+                    onClick={() => setScoreA(prev => typeof prev === 'number' && prev > 0 ? prev - 1 : prev)}
+
+                    className="tennis-button h-6 w-6 flex items-center justify-center text-sm rounded-b"
+
+                  >
+
+                    ▼
+
+                  </button>
+
+                </div>
+
+                <input
+
+                  type="number"
+
+                  min="0"
+
+                  max="6"
+
+                  value={scoreA}
+
+                  onChange={(e) => {
+
+                    const value = e.target.value === '' ? '' : parseInt(e.target.value);
+
+                    if (value === '' || (value >= 0 && value <= 6)) {
+
+                      setScoreA(value);
+
+                    }
+
+                  }}
+
+                  className="tennis-input w-16 text-center text-2xl py-2 mx-2"
+
+                />
+
+              </div>
 
             </div>
 
@@ -220,19 +274,75 @@ export default function NewGame() {
 
               <label className="block text-sm font-medium text-gray-700 mb-2">B팀</label>
 
-              <input
+              <div className="flex items-center">
 
-                type="number"
+            
+                <input
 
-                min="0"
+                  type="number"
 
-                value={scoreB}
+                  min="0"
 
-                onChange={(e) => setScoreB(parseInt(e.target.value) || 0)}
+                  max="6"
 
-                className="tennis-input w-full text-center text-2xl py-3"
+                  value={scoreB}
 
-              />
+                  onChange={(e) => {
+
+                    const value = e.target.value === '' ? '' : parseInt(e.target.value);
+
+                    if (value === '' || (value >= 0 && value <= 6)) {
+
+                      setScoreB(value);
+
+                    }
+
+                  }}
+
+                  className="tennis-input w-16 text-center text-2xl py-2 mr-2"
+
+                />
+  
+          <div className="flex flex-col gap-1">
+
+          <button
+
+            type="button"
+
+            onClick={() => setScoreB(prev => {
+
+              if (prev === '' || prev === undefined) return 1;
+
+              return prev < 6 ? prev + 1 : prev;
+
+            })}
+
+            className="tennis-button h-6 w-6 flex items-center justify-center text-sm rounded-t"
+
+          >
+
+            ▲
+
+          </button>
+
+          <button
+
+            type="button"
+
+            onClick={() => setScoreB(prev => typeof prev === 'number' && prev > 0 ? prev - 1 : prev)}
+
+            className="tennis-button h-6 w-6 flex items-center justify-center text-sm rounded-b"
+
+          >
+
+            ▼
+
+          </button>
+
+          </div>
+
+
+              </div>
 
             </div>
 
@@ -286,7 +396,7 @@ export default function NewGame() {
 
                     }}
 
-                    className="tennis-input w-full py-3"
+                    className="tennis-input w-full py-3 bg-white"
 
                   >
 
