@@ -166,6 +166,7 @@ export default function Home() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
+                placeholder="시작일"
                 className="tennis-input w-full sm:w-auto text-gray-700 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit-fields-wrapper]:p-0"
               />
               <span className="hidden sm:block">~</span>
@@ -173,6 +174,7 @@ export default function Home() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                placeholder="종료일"
                 className="tennis-input w-full sm:w-auto text-gray-700 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit-fields-wrapper]:p-0"
               />
             </div>
