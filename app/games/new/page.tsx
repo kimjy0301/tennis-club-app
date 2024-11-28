@@ -192,51 +192,13 @@ export default function NewGame() {
 
           <h2 className="text-lg font-semibold text-gray-900 mb-4">점수</h2>
 
-          <div className="grid grid-cols-3 gap-4 items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
 
-            <div>
+            <div className="flex flex-col items-center">
 
               <label className="block text-sm font-medium text-gray-700 mb-2">A팀</label>
 
-              <div className="flex items-center">
-
-                <div className="flex flex-col gap-1">
-
-                  <button
-
-                    type="button"
-
-                    onClick={() => setScoreA(prev => {
-
-                      if (prev === '' || prev === undefined) return 1;
-
-                      return prev < 6 ? prev + 1 : prev;
-
-                    })}
-
-                    className="tennis-button h-6 w-6 flex items-center justify-center text-sm rounded-t"
-
-                  >
-
-                    ▲
-
-                  </button>
-
-                  <button
-
-                    type="button"
-
-                    onClick={() => setScoreA(prev => typeof prev === 'number' && prev > 0 ? prev - 1 : prev)}
-
-                    className="tennis-button h-6 w-6 flex items-center justify-center text-sm rounded-b"
-
-                  >
-
-                    ▼
-
-                  </button>
-
-                </div>
+              <div className="flex items-center justify-center sm:justify-start">
 
                 <input
 
@@ -263,20 +225,61 @@ export default function NewGame() {
                   className="tennis-input w-16 text-center text-2xl py-2 mx-2"
 
                 />
+                <div className="flex flex-col gap-1">
 
+
+                      <button
+
+                        type="button"
+
+                        onClick={() => setScoreB(prev => {
+
+                          if (prev === '' || prev === undefined) return 1; 
+
+                          return prev < 6 ? prev + 1 : prev;
+
+                        })}
+
+                        className="tennis-button h-8 w-8 sm:h-6 sm:w-6 flex items-center justify-center text-sm rounded-t"
+
+                      >
+
+                        ▲ 
+
+                      </button>
+
+                      <button
+
+                        type="button"
+
+                        onClick={() => setScoreB(prev => typeof prev === 'number' && prev > 0 ? prev - 1 : prev)}
+
+                        className="tennis-button h-8 w-8 sm:h-6 sm:w-6 flex items-center justify-center text-sm rounded-b"
+
+                      >
+
+                        ▼
+
+                      </button>
+
+                      </div>
               </div>
+              
 
             </div>
 
-            <div className="text-center text-gray-500">VS</div>
 
-            <div>
+
+            <div className="text-center text-gray-500 py-2">VS</div>
+
+
+
+            <div className="flex flex-col items-center">
 
               <label className="block text-sm font-medium text-gray-700 mb-2">B팀</label>
 
-              <div className="flex items-center">
+              <div className="flex items-center justify-center sm:justify-start">
 
-            
                 <input
 
                   type="number"
@@ -302,45 +305,44 @@ export default function NewGame() {
                   className="tennis-input w-16 text-center text-2xl py-2 mr-2"
 
                 />
-  
-          <div className="flex flex-col gap-1">
 
-          <button
+                <div className="flex flex-col gap-1">
 
-            type="button"
+                  <button
 
-            onClick={() => setScoreB(prev => {
+                    type="button"
 
-              if (prev === '' || prev === undefined) return 1;
+                    onClick={() => setScoreB(prev => {
 
-              return prev < 6 ? prev + 1 : prev;
+                      if (prev === '' || prev === undefined) return 1;
 
-            })}
+                      return prev < 6 ? prev + 1 : prev;
 
-            className="tennis-button h-6 w-6 flex items-center justify-center text-sm rounded-t"
+                    })}
 
-          >
+                    className="tennis-button h-8 w-8 sm:h-6 sm:w-6 flex items-center justify-center text-sm rounded-t"
 
-            ▲
+                  >
 
-          </button>
+                    ▲
 
-          <button
+                  </button>
 
-            type="button"
+                  <button
 
-            onClick={() => setScoreB(prev => typeof prev === 'number' && prev > 0 ? prev - 1 : prev)}
+                    type="button"
 
-            className="tennis-button h-6 w-6 flex items-center justify-center text-sm rounded-b"
+                    onClick={() => setScoreB(prev => typeof prev === 'number' && prev > 0 ? prev - 1 : prev)}
 
-          >
+                    className="tennis-button h-8 w-8 sm:h-6 sm:w-6 flex items-center justify-center text-sm rounded-b"
 
-            ▼
+                  >
 
-          </button>
+                    ▼
 
-          </div>
+                  </button>
 
+                </div>
 
               </div>
 

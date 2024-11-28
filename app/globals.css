@@ -27,7 +27,7 @@
   
   .tennis-input {
     @apply border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-green-500 
-    focus:ring-2 focus:ring-green-200 outline-none transition-all duration-200;
+    focus:ring-2 focus:ring-green-200 outline-none transition-all duration-200 bg-white;
   }
 
   .nav-link {
