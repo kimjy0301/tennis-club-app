@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import Image from "next/image";
+import { useState, useEffect } from "react";
 
 interface RankingData {
   rank: number;
@@ -13,14 +13,14 @@ interface RankingData {
   profileImage?: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export default function RankingsPage() {
   const [rankings, setRankings] = useState<RankingData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<'month' | 'all'>('month');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [dateRange, setDateRange] = useState<"month" | "all">("month");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     const fetchRankings = async () => {
@@ -28,28 +28,28 @@ export default function RankingsPage() {
         const url = `${API_URL}/api/rankings`;
         const params = new URLSearchParams();
 
-        if (dateRange === 'month') {
+        if (dateRange === "month") {
           const monthAgo = new Date();
           monthAgo.setMonth(monthAgo.getMonth() - 1);
-          params.append('startDate', monthAgo.toISOString());
-          params.append('endDate', new Date().toISOString());
-        } else if (dateRange === 'all' && startDate && endDate) {
+          params.append("startDate", monthAgo.toISOString());
+          params.append("endDate", new Date().toISOString());
+        } else if (dateRange === "all" && startDate && endDate) {
           const endDateTime = new Date(endDate);
           endDateTime.setHours(23, 59, 59, 999);
-          params.append('startDate', new Date(startDate).toISOString());
-          params.append('endDate', endDateTime.toISOString());
+          params.append("startDate", new Date(startDate).toISOString());
+          params.append("endDate", endDateTime.toISOString());
         }
 
         const queryString = params.toString();
         const finalUrl = queryString ? `${url}?${queryString}` : url;
-        
+
         const response = await fetch(finalUrl);
         const data = await response.json();
 
-        console.log(data);  
+        console.log(data);
         setRankings(data);
       } catch (error) {
-        console.error('Error fetching rankings:', error);
+        console.error("Error fetching rankings:", error);
       } finally {
         setLoading(false);
       }
@@ -75,41 +75,41 @@ export default function RankingsPage() {
         <div className="flex flex-col space-y-4">
           <div className="flex flex-wrap gap-4">
             <button
-              onClick={() => setDateRange('month')}
+              onClick={() => setDateRange("month")}
               className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
-                dateRange === 'month'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                dateRange === "month"
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
               최근 1개월
             </button>
             <button
-              onClick={() => setDateRange('all')}
+              onClick={() => setDateRange("all")}
               className={`px-4 py-2 rounded-md flex-1 sm:flex-none ${
-                dateRange === 'all'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                dateRange === "all"
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
               전체 기간
             </button>
           </div>
-          
-          {dateRange === 'all' && (
+
+          {dateRange === "all" && (
             <div className="flex flex-col sm:flex-row gap-4 items-center">
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="tennis-input w-full sm:w-auto"
+                className="tennis-input w-full sm:w-auto text-gray-700 [&::-webkit-datetime-edit]:p-2"
               />
               <span className="hidden sm:block">~</span>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="tennis-input w-full sm:w-auto"
+                className="tennis-input w-full sm:w-auto text-gray-700 [&::-webkit-datetime-edit]:p-2"
               />
             </div>
           )}
@@ -143,16 +143,18 @@ export default function RankingsPage() {
               {rankings.map((player) => (
                 <tr key={player.name} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className={`text-sm font-medium ${
-                      player.rank <= 3 ? 'text-green-600' : 'text-gray-900'
-                    }`}>
+                    <div
+                      className={`text-sm font-medium ${
+                        player.rank <= 3 ? "text-green-600" : "text-gray-900"
+                      }`}
+                    >
                       {player.rank}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                        <Image
-                        src={player.profileImage || '/default-profile.png'}
+                      <Image
+                        src={player.profileImage || "/default-profile.png"}
                         alt={player.name}
                         className="w-8 h-8 rounded-full mr-3 object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -173,7 +175,9 @@ export default function RankingsPage() {
                     <div className="text-sm text-gray-900">{player.score}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{player.totalGames}</div>
+                    <div className="text-sm text-gray-900">
+                      {player.totalGames}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
@@ -194,4 +198,4 @@ export default function RankingsPage() {
       )}
     </div>
   );
-} 
+}

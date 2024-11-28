@@ -143,7 +143,7 @@ export default function NewGame() {
                       setScoreA(value);
                     }
                   }}
-                  className="tennis-input w-16 text-center text-2xl py-2 mx-2"
+                  className="tennis-input w-44 text-center text-2xl py-2 mx-2"
                 />
                 <div className="flex flex-col gap-1">
                   <button
@@ -196,7 +196,7 @@ export default function NewGame() {
                       setScoreB(value);
                     }
                   }}
-                  className="tennis-input w-16 text-center text-2xl py-2 mr-2"
+                  className="tennis-input w-44 text-center text-2xl py-2 mr-2"
                 />
 
                 <div className="flex flex-col gap-1">
