@@ -14,17 +14,17 @@
   .sport-card {
     @apply bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300;
   }
-  
+
   .tennis-gradient {
     @apply bg-gradient-to-r from-green-600 to-green-700;
   }
-  
+
   .tennis-button {
     @apply px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-md 
     hover:from-green-700 hover:to-green-800 transition-all duration-300 
     shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
   }
-  
+
   .tennis-input {
     @apply border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-green-500 
     focus:ring-2 focus:ring-green-200 outline-none transition-all duration-200 bg-white;
@@ -33,20 +33,21 @@
   .nav-link {
     @apply px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100;
   }
-  
+
   .mobile-nav-link {
     @apply block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100;
   }
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
     transform: translateY(-20px);
   }
-} 
+}
 
 @keyframes fadeIn {
   from {
@@ -76,4 +77,15 @@
 
 .animate-modal {
   animation: modalFade 0.3s ease-out;
-} 
+}
+
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: gray;
+}
+
+input[type="date"]:invalid::-webkit-datetime-edit {
+  color: #999;
+}

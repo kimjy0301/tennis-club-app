@@ -166,14 +166,14 @@ export default function Home() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="tennis-input w-full sm:w-auto text-gray-700 [&::-webkit-datetime-edit]:p-2"
+                className="tennis-input w-full sm:w-auto text-gray-700 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit-fields-wrapper]:p-0"
               />
               <span className="hidden sm:block">~</span>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="tennis-input w-full sm:w-auto text-gray-700 [&::-webkit-datetime-edit]:p-2"
+                className="tennis-input w-full sm:w-auto text-gray-700 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit]:p-2 [&::-webkit-datetime-edit-fields-wrapper]:p-0"
               />
             </div>
           )}
