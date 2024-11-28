@@ -232,7 +232,7 @@ export default function NewGame() {
 
                         type="button"
 
-                        onClick={() => setScoreB(prev => {
+                        onClick={() => setScoreA(prev => {
 
                           if (prev === '' || prev === undefined) return 1; 
 
@@ -252,7 +252,7 @@ export default function NewGame() {
 
                         type="button"
 
-                        onClick={() => setScoreB(prev => typeof prev === 'number' && prev > 0 ? prev - 1 : prev)}
+                        onClick={() => setScoreA(prev => typeof prev === 'number' && prev > 0 ? prev - 1 : prev)}
 
                         className="tennis-button h-8 w-8 sm:h-6 sm:w-6 flex items-center justify-center text-sm rounded-b"
 
