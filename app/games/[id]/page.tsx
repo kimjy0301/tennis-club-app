@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { useParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 interface Player {
   id: number;
@@ -23,7 +24,7 @@ interface GameResult {
   scoreTeamB: number;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export default function GameDetail() {
   const params = useParams();
@@ -40,18 +41,18 @@ export default function GameDetail() {
         const response = await fetch(`${API_URL}/api/games/${params.id}`);
         const data = await response.json();
         setGame(data);
-        
+
         if (data) {
-          const date = new Date(data.date).toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            weekday: 'long'
+          const date = new Date(data.date).toLocaleDateString("ko-KR", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            weekday: "long",
           });
           setPreviousDate(date);
         }
       } catch (error) {
-        console.error('Error fetching game:', error);
+        console.error("Error fetching game:", error);
       } finally {
         setLoading(false);
       }
@@ -61,24 +62,24 @@ export default function GameDetail() {
   }, [params.id]);
 
   const handleDelete = async () => {
-    if (!confirm('정말로 이 경기 기록을 삭제하시겠습니까?')) {
+    if (!confirm("정말로 이 경기 기록을 삭제하시겠습니까?")) {
       return;
     }
 
     setIsDeleting(true);
     try {
       const response = await fetch(`${API_URL}/api/games/${params.id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
-        router.push('/');
+        router.push("/");
       } else {
-        throw new Error('Failed to delete');
+        throw new Error("Failed to delete");
       }
     } catch (error) {
-      console.error('Error deleting game:', error);
-      alert('삭제 중 오류가 발생했습니다.');
+      console.error("Error deleting game:", error);
+      alert("삭제 중 오류가 발생했습니다.");
     } finally {
       setIsDeleting(false);
     }
@@ -88,16 +89,12 @@ export default function GameDetail() {
     if (previousDate) {
       router.push(`/games?date=${encodeURIComponent(previousDate)}`);
     } else {
-      router.push('/');
+      router.push("/");
     }
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (!game) {
@@ -110,7 +107,7 @@ export default function GameDetail() {
     );
   }
 
-  const winningTeam = game.scoreTeamA > game.scoreTeamB ? 'A' : 'B';
+  const winningTeam = game.scoreTeamA > game.scoreTeamB ? "A" : "B";
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -120,11 +117,11 @@ export default function GameDetail() {
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-xl md:text-2xl font-bold">경기 상세</h1>
             <div className="text-sm md:text-lg">
-              {new Date(game.date).toLocaleDateString('ko-KR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                weekday: 'long',
+              {new Date(game.date).toLocaleDateString("ko-KR", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                weekday: "long",
               })}
             </div>
           </div>
@@ -133,13 +130,17 @@ export default function GameDetail() {
         {/* 스코어보드 */}
         <div className="bg-gray-800 text-white p-6">
           <div className="grid grid-cols-3 gap-4 items-center text-center">
-            <div className={`text-2xl font-bold ${winningTeam === 'A' ? 'text-yellow-400' : ''}`}>
+            <div
+              className={`text-2xl font-bold ${winningTeam === "A" ? "text-yellow-400" : ""}`}
+            >
               A팀
             </div>
             <div className="text-2xl md:text-4xl font-bold">
               {game.scoreTeamA} - {game.scoreTeamB}
             </div>
-            <div className={`text-2xl font-bold ${winningTeam === 'B' ? 'text-yellow-400' : ''}`}>
+            <div
+              className={`text-2xl font-bold ${winningTeam === "B" ? "text-yellow-400" : ""}`}
+            >
               B팀
             </div>
           </div>
@@ -148,26 +149,36 @@ export default function GameDetail() {
         {/* 선수 명단 */}
         <div className="p-6">
           <div className="grid md:grid-cols-2 gap-8">
-            <div className={`p-4 rounded-lg ${winningTeam === 'A' ? 'bg-blue-50' : 'bg-gray-50'}`}>
+            <div
+              className={`p-4 rounded-lg ${winningTeam === "A" ? "bg-blue-50" : "bg-gray-50"}`}
+            >
               <h2 className="text-xl font-semibold mb-4">A팀 선수</h2>
               <div className="space-y-2">
                 {game.playerGames
-                  .filter(pg => pg.team === 'A')
+                  .filter((pg) => pg.team === "A")
                   .map((playerGame) => (
-                    <div key={playerGame.id} className="bg-white p-3 rounded-lg shadow-sm">
+                    <div
+                      key={playerGame.id}
+                      className="bg-white p-3 rounded-lg shadow-sm"
+                    >
                       {playerGame.player.name}
                     </div>
                   ))}
               </div>
             </div>
 
-            <div className={`p-4 rounded-lg ${winningTeam === 'B' ? 'bg-blue-50' : 'bg-gray-50'}`}>
+            <div
+              className={`p-4 rounded-lg ${winningTeam === "B" ? "bg-blue-50" : "bg-gray-50"}`}
+            >
               <h2 className="text-xl font-semibold mb-4">B팀 선수</h2>
               <div className="space-y-2">
                 {game.playerGames
-                  .filter(pg => pg.team === 'B')
+                  .filter((pg) => pg.team === "B")
                   .map((playerGame) => (
-                    <div key={playerGame.id} className="bg-white p-3 rounded-lg shadow-sm">
+                    <div
+                      key={playerGame.id}
+                      className="bg-white p-3 rounded-lg shadow-sm"
+                    >
                       {playerGame.player.name}
                     </div>
                   ))}
@@ -198,10 +209,10 @@ export default function GameDetail() {
             disabled={isDeleting}
             className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50"
           >
-            {isDeleting ? '삭제 중...' : '경기 삭제'}
+            {isDeleting ? "삭제 중..." : "경기 삭제"}
           </button>
         </div>
       </div>
     </div>
   );
-} 
+}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import GameCard from "@/components/GameCard";
 import Modal from "@/components/Modal";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 interface Player {
   id: number;
@@ -119,11 +120,7 @@ export default function Home() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
