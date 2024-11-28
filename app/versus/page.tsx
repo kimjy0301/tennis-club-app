@@ -236,7 +236,7 @@ export default function VersusPage() {
 
             return (
               <div key={game.id} className="bg-white rounded-xl shadow-sm p-6">
-                <div className="text-sm text-gray-500 mb-4">
+                <div className="text-sm text-gray-500 mb-4 font-semibold">
                   {formatDate(game.date)}
                 </div>
                 <div className="grid grid-cols-3 gap-4 items-center mb-4">
