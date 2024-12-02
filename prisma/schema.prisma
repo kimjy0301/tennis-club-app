@@ -8,27 +8,43 @@ datasource db {
 }
 
 model Game {
-  id         Int      @id @default(autoincrement())
-  date       DateTime
-  scoreTeamA Int
-  scoreTeamB Int
+  id          Int          @id @default(autoincrement())
+  date        DateTime
+  scoreTeamA  Int
+  scoreTeamB  Int
   playerGames PlayerGame[]
 }
 
 model Player {
-  id         Int         @id @default(autoincrement())
-  name       String
+  id           Int           @id @default(autoincrement())
+  name         String
   profileImage String?
-  playerGames PlayerGame[] 
+  achievements Achievement[]
+  playerGames  PlayerGame[]
 }
 
 model PlayerGame {
-  id       Int      @id @default(autoincrement())
-  player   Player   @relation(fields: [playerId], references: [id])
+  id       Int    @id @default(autoincrement())
   playerId Int
-  game     Game     @relation(fields: [gameId], references: [id])
   gameId   Int
   team     String
+  game     Game   @relation(fields: [gameId], references: [id])
+  player   Player @relation(fields: [playerId], references: [id])
 
   @@unique([playerId, gameId])
+  @@index([gameId], map: "PlayerGame_gameId_fkey")
+}
+
+model Achievement {
+  id          Int      @id @default(autoincrement())
+  playerId    Int
+  title       String
+  rank        String
+  points      Int
+  date        DateTime
+  description String?
+  image       String?
+  player      Player   @relation(fields: [playerId], references: [id])
+
+  @@index([playerId], map: "Achievement_playerId_fkey")
 }

@@ -10,7 +10,9 @@ interface RankingData {
   totalGames: number;
   wins: number;
   losses: number;
+  draws: number;
   score: number;
+  achievementsScore: number;
   profileImage?: string;
 }
 
@@ -136,13 +138,13 @@ export default function RankingsPage() {
                   선수명
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  점수
+                  입상
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   경기수
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  승/패
+                  승/패/무
                 </th>
               </tr>
             </thead>
@@ -179,7 +181,9 @@ export default function RankingsPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{player.score}</div>
+                    <div className="text-sm text-gray-900">
+                      {player.achievementsScore}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
@@ -188,7 +192,7 @@ export default function RankingsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {player.wins}/{player.losses}
+                      {player.wins}/{player.losses}/{player.draws}
                     </div>
                   </td>
                 </tr>

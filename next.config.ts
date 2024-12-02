@@ -4,10 +4,10 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'vpo0hsfeu9o9bhxg.public.blob.vercel-storage.com',
-        port: '',
-        pathname: '/profiles/**',
+        protocol: "https",
+        hostname: "vpo0hsfeu9o9bhxg.public.blob.vercel-storage.com",
+        port: "",
+        pathname: "/**",
       },
     ],
   },
@@ -15,4 +15,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-

@@ -54,28 +54,34 @@ export default function GameHistoryModal({
                   {playerName && (
                     <div
                       className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        (game.playerGames.some(
-                          (pg) =>
-                            pg.player.name === playerName && pg.team === "A"
-                        ) &&
-                          game.scoreTeamA > game.scoreTeamB) ||
-                        (game.playerGames.some(
-                          (pg) =>
-                            pg.player.name === playerName && pg.team === "B"
-                        ) &&
-                          game.scoreTeamB > game.scoreTeamA)
+                        game.scoreTeamA === game.scoreTeamB
+                          ? "bg-gray-100 text-gray-700"
+                          : (game.playerGames.some(
+                              (pg) =>
+                                pg.player.name === playerName && pg.team === "A"
+                            ) &&
+                              game.scoreTeamA > game.scoreTeamB) ||
+                            (game.playerGames.some(
+                              (pg) =>
+                                pg.player.name === playerName && pg.team === "B"
+                            ) &&
+                              game.scoreTeamB > game.scoreTeamA)
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
                       }`}
                     >
-                      {(game.playerGames.some(
-                        (pg) => pg.player.name === playerName && pg.team === "A"
-                      ) &&
-                        game.scoreTeamA > game.scoreTeamB) ||
-                      (game.playerGames.some(
-                        (pg) => pg.player.name === playerName && pg.team === "B"
-                      ) &&
-                        game.scoreTeamB > game.scoreTeamA)
+                      {game.scoreTeamA === game.scoreTeamB
+                        ? "무"
+                        : (game.playerGames.some(
+                            (pg) =>
+                              pg.player.name === playerName && pg.team === "A"
+                          ) &&
+                            game.scoreTeamA > game.scoreTeamB) ||
+                          (game.playerGames.some(
+                            (pg) =>
+                              pg.player.name === playerName && pg.team === "B"
+                          ) &&
+                            game.scoreTeamB > game.scoreTeamA)
                         ? "승"
                         : "패"}
                     </div>

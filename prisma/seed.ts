@@ -1,13 +1,42 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
 const players = [
-  '김지용', '홍원준', '송인숙', '장경철', '윤진아', '최윤아', '임기호', '박정환', '강미경', '풍주윤', '정병현', '설형남', '윤윤주', '남궁규영', '추재근', '한신영', '성영연', '홍석연', '고시환', '임보아', '남종훈', '남궁원빈', '배경수', '안현아', '안혜은', '양영빈', '장은혁', '심성준', '정승기', '전영재', '한석호'  
-
+  "김민준",
+  "이서준",
+  "박지훈",
+  "최현우",
+  "정도현",
+  "강민서",
+  "윤준호",
+  "임지원",
+  "송현준",
+  "황동현",
+  "김태윤",
+  "박성민",
+  "이준영",
+  "정우진",
+  "조민재",
+  "강동욱",
+  "한지호",
+  "배현수",
+  "유승민",
+  "신동훈",
+  "김서진",
+  "이민호",
+  "박준서",
+  "최우진",
+  "정태호",
+  "강민규",
+  "오승준",
+  "남기현",
+  "장현우",
+  "구본우",
 ];
 
 async function main() {
+  await prisma.playerGame.deleteMany();
   await prisma.player.deleteMany();
   await prisma.game.deleteMany();
 
@@ -21,13 +50,13 @@ async function main() {
   }
 
   // 최근 30일간의 게임 데이터 생성
-  for (let i = 0; i < 30; i++) {
-    const gamesPerDay = Math.floor(Math.random() * 10) + 1;
-    
+  for (let i = 0; i < 180; i++) {
+    const gamesPerDay = Math.floor(Math.random() * 12) + 1;
+
     for (let j = 0; j < gamesPerDay; j++) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      
+
       // 승리팀은 6점, 패배팀은 0-5점
       const losingScore = Math.floor(Math.random() * 6);
       const isTeamAWinner = Math.random() < 0.5;
@@ -42,48 +71,45 @@ async function main() {
         },
       });
 
-      // 데이터베이스에서 랜덤하게 4명의 선수 선택
-      const randomPlayers = await prisma.player.findMany({
-        take: 4,
-        orderBy: {
-          id: 'asc',
-        },
-        skip: Math.floor(Math.random() * (players.length - 3)), // 랜덤하게 선수 선택
-      });
+      // 데이터베이스에서 랜든 선수를 가져와서 랜덤하게 섞기
+      const allPlayers = await prisma.player.findMany();
+      const randomPlayers = allPlayers
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 4);
 
       // 선수들을 게임에 할당 (수정된 부분)
       await prisma.playerGame.create({
         data: {
           playerId: randomPlayers[0].id,
           gameId: game.id,
-          team: 'A'
-        }
+          team: "A",
+        },
       });
       await prisma.playerGame.create({
         data: {
           playerId: randomPlayers[1].id,
           gameId: game.id,
-          team: 'A'
-        }
+          team: "A",
+        },
       });
       await prisma.playerGame.create({
         data: {
           playerId: randomPlayers[2].id,
           gameId: game.id,
-          team: 'B'
-        }
+          team: "B",
+        },
       });
       await prisma.playerGame.create({
         data: {
           playerId: randomPlayers[3].id,
           gameId: game.id,
-          team: 'B'
-        }
+          team: "B",
+        },
       });
     }
   }
 
-  console.log('더미 데이터 생성 완료!');
+  console.log("더미 데이터 생성 완료!");
 }
 
 main()
@@ -93,4 +119,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-  }); 
+  });

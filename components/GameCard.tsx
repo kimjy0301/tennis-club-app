@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 interface Player {
   id: number;
@@ -22,17 +22,18 @@ interface GameCardProps {
   isLastItem: boolean;
 }
 
-export default function GameCard({ id, playerGames = [], scoreTeamA, scoreTeamB, isLastItem }: GameCardProps) {
-
-
-  console.log("!!!!");
-  console.log(playerGames);
-
+export default function GameCard({
+  id,
+  playerGames = [],
+  scoreTeamA,
+  scoreTeamB,
+  isLastItem,
+}: GameCardProps) {
   return (
     <Link
       href={`/games/${id}`}
       className={`block hover:bg-gray-50 transition-colors ${
-        !isLastItem ? 'border-b border-gray-200' : ''
+        !isLastItem ? "border-b border-gray-200" : ""
       }`}
     >
       <div className="p-2 sm:p-4">
@@ -40,16 +41,22 @@ export default function GameCard({ id, playerGames = [], scoreTeamA, scoreTeamB,
           {/* A팀 (왼쪽) */}
           <div className="col-span-3 text-right">
             <div className="space-y-0.5 sm:space-y-1">
-              {playerGames?.filter(pg => pg.team === 'A')
+              {playerGames
+                ?.filter((pg) => pg.team === "A")
                 .map((playerGame) => (
-                  <div key={playerGame.id} className="text-gray-700 text-sm sm:text-base truncate">
+                  <div
+                    key={playerGame.id}
+                    className="text-gray-700 text-sm sm:text-base truncate"
+                  >
                     {playerGame.player.name}
                   </div>
                 ))}
             </div>
-            <div className={`text-base sm:text-lg font-bold mt-1 sm:mt-2 ${
-              scoreTeamA > scoreTeamB ? 'text-blue-600' : 'text-gray-600'
-            }`}>
+            <div
+              className={`text-base sm:text-lg font-bold mt-1 sm:mt-2 ${
+                scoreTeamA > scoreTeamB ? "text-blue-600" : "text-gray-600"
+              }`}
+            >
               A팀
             </div>
           </div>
@@ -66,32 +73,46 @@ export default function GameCard({ id, playerGames = [], scoreTeamA, scoreTeamB,
           {/* B팀 (오른쪽) */}
           <div className="col-span-3 text-left">
             <div className="space-y-0.5 sm:space-y-1">
-              {playerGames?.filter(pg => pg.team === 'B')
+              {playerGames
+                ?.filter((pg) => pg.team === "B")
                 .map((playerGame) => (
-                  <div key={playerGame.id} className="text-gray-700 text-sm sm:text-base truncate">
+                  <div
+                    key={playerGame.id}
+                    className="text-gray-700 text-sm sm:text-base truncate"
+                  >
                     {playerGame.player.name}
                   </div>
                 ))}
             </div>
-            <div className={`text-base sm:text-lg font-bold mt-1 sm:mt-2 ${
-              scoreTeamA < scoreTeamB ? 'text-blue-600' : 'text-gray-600'
-            }`}>
+            <div
+              className={`text-base sm:text-lg font-bold mt-1 sm:mt-2 ${
+                scoreTeamA < scoreTeamB ? "text-blue-600" : "text-gray-600"
+              }`}
+            >
               B팀
             </div>
           </div>
         </div>
-        
+
         {/* 승리 표시 */}
         <div className="text-center mt-1 sm:mt-2 text-xs sm:text-sm">
-          <span className={`inline-block px-2 sm:px-3 py-0.5 sm:py-1 rounded-full ${
-            scoreTeamA > scoreTeamB 
-              ? 'bg-blue-50 text-blue-600'
-              : 'bg-blue-50 text-blue-600'
-          }`}>
-            {scoreTeamA > scoreTeamB ? 'A팀 승리' : 'B팀 승리'}
+          <span
+            className={`inline-block px-2 sm:px-3 py-0.5 sm:py-1 rounded-full ${
+              scoreTeamA === scoreTeamB
+                ? "bg-gray-50 text-gray-600"
+                : scoreTeamA > scoreTeamB
+                ? "bg-blue-50 text-blue-600"
+                : "bg-blue-50 text-blue-600"
+            }`}
+          >
+            {scoreTeamA === scoreTeamB
+              ? "무승부"
+              : scoreTeamA > scoreTeamB
+              ? "A팀 승리"
+              : "B팀 승리"}
           </span>
         </div>
       </div>
     </Link>
   );
-} 
+}

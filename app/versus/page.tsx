@@ -101,14 +101,20 @@ export default function VersusPage() {
       )?.team;
 
       if (player1Team && player2Team) {
-        const isTeamAWin = game.scoreTeamA > game.scoreTeamB;
-        if (
-          (player1Team === "A" && isTeamAWin) ||
-          (player1Team === "B" && !isTeamAWin)
-        ) {
-          player1Wins++;
+        if (game.scoreTeamA === game.scoreTeamB) {
+          // 무승부 처리 - 각각 0.5승 추가
+          player1Wins += 0.5;
+          player2Wins += 0.5;
         } else {
-          player2Wins++;
+          const isTeamAWin = game.scoreTeamA > game.scoreTeamB;
+          if (
+            (player1Team === "A" && isTeamAWin) ||
+            (player1Team === "B" && !isTeamAWin)
+          ) {
+            player1Wins++;
+          } else {
+            player2Wins++;
+          }
         }
       }
     });
@@ -262,14 +268,15 @@ export default function VersusPage() {
       {games.length > 0 && (
         <div className="space-y-4">
           {games.map((game) => {
-            // 승패 계산
             const player1Team = game.playerGames.find(
               (pg) => pg.player.id === player1Id
             )?.team;
+            const isDraw = game.scoreTeamA === game.scoreTeamB;
             const isTeamAWin = game.scoreTeamA > game.scoreTeamB;
-            const isPlayer1Win =
-              (player1Team === "A" && isTeamAWin) ||
-              (player1Team === "B" && !isTeamAWin);
+            const isPlayer1Win = isDraw
+              ? null
+              : (player1Team === "A" && isTeamAWin) ||
+                (player1Team === "B" && !isTeamAWin);
 
             return (
               <div key={game.id} className="bg-white rounded-xl shadow-sm p-6">
@@ -303,16 +310,36 @@ export default function VersusPage() {
                             {pg.player.name}
                             {pg.player.id === player1Id && (
                               <span
-                                className={`ml-1 ${isPlayer1Win ? "text-blue-600" : "text-red-600"}`}
+                                className={`ml-1 ${
+                                  isDraw
+                                    ? "text-gray-600"
+                                    : isPlayer1Win
+                                    ? "text-blue-600"
+                                    : "text-red-600"
+                                }`}
                               >
-                                {isPlayer1Win ? "(승)" : "(패)"}
+                                {isDraw
+                                  ? "(무)"
+                                  : isPlayer1Win
+                                  ? "(승)"
+                                  : "(패)"}
                               </span>
                             )}
                             {pg.player.id === player2Id && (
                               <span
-                                className={`ml-1 ${!isPlayer1Win ? "text-blue-600" : "text-red-600"}`}
+                                className={`ml-1 ${
+                                  isDraw
+                                    ? "text-gray-600"
+                                    : !isPlayer1Win
+                                    ? "text-blue-600"
+                                    : "text-red-600"
+                                }`}
                               >
-                                {!isPlayer1Win ? "(승)" : "(패)"}
+                                {isDraw
+                                  ? "(무)"
+                                  : !isPlayer1Win
+                                  ? "(승)"
+                                  : "(패)"}
                               </span>
                             )}
                           </div>
@@ -353,16 +380,36 @@ export default function VersusPage() {
                             {pg.player.name}
                             {pg.player.id === player1Id && (
                               <span
-                                className={`ml-1 ${isPlayer1Win ? "text-blue-600" : "text-red-600"}`}
+                                className={`ml-1 ${
+                                  isDraw
+                                    ? "text-gray-600"
+                                    : isPlayer1Win
+                                    ? "text-blue-600"
+                                    : "text-red-600"
+                                }`}
                               >
-                                {isPlayer1Win ? "(승)" : "(패)"}
+                                {isDraw
+                                  ? "(무)"
+                                  : isPlayer1Win
+                                  ? "(승)"
+                                  : "(패)"}
                               </span>
                             )}
                             {pg.player.id === player2Id && (
                               <span
-                                className={`ml-1 ${!isPlayer1Win ? "text-blue-600" : "text-red-600"}`}
+                                className={`ml-1 ${
+                                  isDraw
+                                    ? "text-gray-600"
+                                    : !isPlayer1Win
+                                    ? "text-blue-600"
+                                    : "text-red-600"
+                                }`}
                               >
-                                {!isPlayer1Win ? "(승)" : "(패)"}
+                                {isDraw
+                                  ? "(무)"
+                                  : !isPlayer1Win
+                                  ? "(승)"
+                                  : "(패)"}
                               </span>
                             )}
                           </div>

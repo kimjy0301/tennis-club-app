@@ -1,19 +1,22 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
 
     // 게임 조회를 위한 where 조건 설정
-    const whereCondition = startDate && endDate ? {
-      date: {
-        gte: new Date(startDate),
-        lte: new Date(endDate),
-      }
-    } : {};
+    const whereCondition =
+      startDate && endDate
+        ? {
+            date: {
+              gte: new Date(startDate),
+              lte: new Date(endDate),
+            },
+          }
+        : {};
 
     // 모든 게임 조회
     const games = await prisma.game.findMany({
@@ -21,8 +24,8 @@ export async function GET(request: Request) {
       include: {
         playerGames: {
           include: {
-            player: true
-          }
+            player: true,
+          },
         },
       },
     });
@@ -30,8 +33,46 @@ export async function GET(request: Request) {
     // 선수별 통계 계산
     const playerStats = new Map();
 
-    games.forEach(game => {
-      game.playerGames.forEach(playerGame => {
+    // 먼저 모든 선수의 업적 점수를 계산
+    for (const game of games) {
+      for (const playerGame of game.playerGames) {
+        const player = playerGame.player;
+        // 기존 통계 초기화에 achievements 점수 합계 추가
+        const stats = playerStats.get(player.id) || {
+          id: player.id,
+          name: player.name,
+          profileImage: player.profileImage,
+          totalGames: 0,
+          wins: 0,
+          losses: 0,
+          draws: 0,
+          score: 0,
+          achievementsScore: 0,
+        };
+
+        // 아직 업적 점수가 계산되지 않은 경우에만 계산
+        if (!stats.achievementsCalculated) {
+          // 해당 선수의 모든 업적 조회
+          const achievements = await prisma.achievement.findMany({
+            where: { playerId: player.id },
+          });
+
+          // 업적 점수 합산을 achievementsScore에 저장
+          stats.achievementsScore = achievements.reduce(
+            (sum, achievement) => sum + achievement.points,
+            0
+          );
+          stats.score += stats.achievementsScore; // 전체 점수에 업적 점수 추가
+          stats.achievementsCalculated = true;
+        }
+
+        playerStats.set(player.id, stats);
+      }
+    }
+
+    // 게임 점수 계산 (기존 로직)
+    games.forEach((game) => {
+      game.playerGames.forEach((playerGame) => {
         const player = playerGame.player;
         const stats = playerStats.get(player.id) || {
           id: player.id,
@@ -40,7 +81,9 @@ export async function GET(request: Request) {
           totalGames: 0,
           wins: 0,
           losses: 0,
+          draws: 0,
           score: 0,
+          achievementsScore: 0,
         };
 
         // 출석 점수 +2
@@ -48,8 +91,16 @@ export async function GET(request: Request) {
         stats.totalGames++;
 
         const isTeamAWinner = game.scoreTeamA > game.scoreTeamB;
-        if ((playerGame.team === 'A' && isTeamAWinner) || 
-            (playerGame.team === 'B' && !isTeamAWinner)) {
+        const isDraw = game.scoreTeamA === game.scoreTeamB;
+
+        if (isDraw) {
+          // 무승부 점수 +2
+          stats.score += 2;
+          stats.draws++;
+        } else if (
+          (playerGame.team === "A" && isTeamAWinner) ||
+          (playerGame.team === "B" && !isTeamAWinner)
+        ) {
           // 승리 점수 +3
           stats.score += 3;
           stats.wins++;
@@ -68,15 +119,15 @@ export async function GET(request: Request) {
       .sort((a, b) => b.score - a.score)
       .map((player, index) => ({
         ...player,
-        rank: index + 1
+        rank: index + 1,
       }));
 
     return NextResponse.json(rankings);
   } catch (error) {
-    console.error('Error calculating rankings:', error);
+    console.error("Error calculating rankings:", error);
     return NextResponse.json(
-      { error: 'Failed to calculate rankings' },
+      { error: "Failed to calculate rankings" },
       { status: 500 }
     );
   }
-} 
+}

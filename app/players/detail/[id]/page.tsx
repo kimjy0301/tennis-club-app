@@ -172,12 +172,22 @@ export default function PlayerDetail() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               {player.name}
             </h2>
-            <button
-              onClick={() => setIsEditing(true)}
-              className="tennis-button"
-            >
-              정보 수정
-            </button>
+            <div className="space-x-4">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="tennis-button"
+              >
+                정보 수정
+              </button>
+              <button
+                onClick={() =>
+                  router.push(`/players/achievements/${params.id}`)
+                }
+                className="tennis-button"
+              >
+                입상 등록
+              </button>
+            </div>
           </div>
         )}
       </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import GameHistoryModal from "@/components/GameHistoryModal";
 import { Game } from "@/types/game";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import Image from "next/image";
 
 interface RankingData {
   rank: number;
@@ -12,7 +13,9 @@ interface RankingData {
   totalGames: number;
   wins: number;
   losses: number;
+  draws: number;
   score: number;
+  achievementsScore: number;
   profileImage?: string;
   id: string;
 }
@@ -128,9 +131,11 @@ export default function Home() {
 
           {/* 1등 내용 */}
           <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-yellow-400 shadow-xl mt-8">
-            <img
+            <Image
               src={rankings[0]?.profileImage || "/default-profile.png"}
               alt={`${rankings[0]?.name} 프로필`}
+              width={128}
+              height={128}
               className="w-full h-full object-cover"
             />
           </div>
@@ -138,14 +143,15 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-green-800">
               {rankings[0]?.name}
             </h2>
-            <p className="text-4xl font-bold my-4 text-green-600">
-              {rankings[0]?.score}점
+            <p className="text-4xl font-bold my-4">
+              <span className="text-green-600">{rankings[0]?.score}점</span>
             </p>
             <div className="text-sm text-gray-600">
               <p>
-                승/패: {rankings[0]?.wins}/{rankings[0]?.losses}
+                승/패/무: {rankings[0]?.wins}/{rankings[0]?.losses}/
+                {rankings[0]?.draws}
               </p>
-              <p>참여: {rankings[0]?.totalGames}경기</p>
+              <p>입상: {rankings[0]?.achievementsScore}점</p>
             </div>
           </div>
         </div>
@@ -173,9 +179,11 @@ export default function Home() {
                   index === 0 ? "border-gray-400" : "border-orange-400"
                 }`}
               >
-                <img
+                <Image
                   src={player?.profileImage || "/default-profile.png"}
                   alt={`${player?.name} 프로필`}
+                  width={128}
+                  height={128}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -184,14 +192,14 @@ export default function Home() {
                 <h2 className="text-xl font-bold text-green-800">
                   {player?.name}
                 </h2>
-                <p className="text-3xl font-bold my-4 text-green-600">
-                  {player?.score}점
+                <p className="text-3xl font-bold my-4">
+                  <span className="text-green-600">{player?.score}점</span>
                 </p>
                 <div className="text-sm text-gray-600">
                   <p>
-                    승/패: {player?.wins}/{player?.losses}
+                    승/패/무: {player?.wins}/{player?.losses}/{player?.draws}
                   </p>
-                  <p>참여: {player?.totalGames}경기</p>
+                  <p>입상: {player?.achievementsScore}점</p>
                 </div>
               </div>
             </div>
@@ -208,31 +216,34 @@ export default function Home() {
           onClick={() => rankings[1]?.id && handlePlayerClick(rankings[1].id)}
         >
           {/* 순위 뱃지 */}
-          <div className="absolute top-4 left-4 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold bg-gray-400">
+          <div className="absolute top-4 left-4 w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-gray-400 text-xl shadow-lg">
             2
           </div>
 
           {/* 프로필 이미지 추가 */}
-          <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-gray-200">
-            <img
+          <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-gray-400 shadow-xl mt-8">
+            <Image
               src={rankings[1]?.profileImage || "/default-profile.png"}
               alt={`${rankings[1]?.name} 프로필`}
+              width={128}
+              height={128}
               className="w-full h-full object-cover"
             />
           </div>
 
           <div className="mt-4">
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-green-800">
               {rankings[1]?.name}
             </h2>
-            <p className="text-3xl font-bold my-4 text-green-600">
-              {rankings[1]?.score}점
+            <p className="text-4xl font-bold my-4">
+              <span className="text-green-600">{rankings[1]?.score}점</span>
             </p>
             <div className="text-sm text-gray-600">
               <p>
-                승/패: {rankings[1]?.wins}/{rankings[1]?.losses}
+                승/패/무: {rankings[1]?.wins}/{rankings[1]?.losses}/
+                {rankings[1]?.draws}
               </p>
-              <p>참여: {rankings[1]?.totalGames}경기</p>
+              <p>입상: {rankings[1]?.achievementsScore}점</p>
             </div>
           </div>
         </div>
@@ -257,9 +268,11 @@ export default function Home() {
 
           {/* 프로필 이미지 */}
           <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-yellow-400 shadow-xl mt-8">
-            <img
+            <Image
               src={rankings[0]?.profileImage || "/default-profile.png"}
               alt={`${rankings[0]?.name} 프로필`}
+              width={128}
+              height={128}
               className="w-full h-full object-cover"
             />
           </div>
@@ -267,14 +280,15 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-green-800">
               {rankings[0]?.name}
             </h2>
-            <p className="text-4xl font-bold my-4 text-green-600">
-              {rankings[0]?.score}점
+            <p className="text-4xl font-bold my-4">
+              <span className="text-green-600">{rankings[0]?.score}점</span>
             </p>
             <div className="text-sm text-gray-600">
               <p>
-                승/패: {rankings[0]?.wins}/{rankings[0]?.losses}
+                승/패/무: {rankings[0]?.wins}/{rankings[0]?.losses}/
+                {rankings[0]?.draws}
               </p>
-              <p>참여: {rankings[0]?.totalGames}경기</p>
+              <p>입상: {rankings[0]?.achievementsScore}점</p>
             </div>
           </div>
         </div>
@@ -286,29 +300,32 @@ export default function Home() {
           onClick={() => rankings[2]?.id && handlePlayerClick(rankings[2].id)}
         >
           {/* 순위 뱃지 */}
-          <div className="absolute top-4 left-4 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold bg-orange-400">
+          <div className="absolute top-4 left-4 w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-orange-400 text-xl shadow-lg">
             3
           </div>
           {/* 프로필 이미지 추가 */}
-          <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-gray-200">
-            <img
+          <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-orange-400 shadow-xl mt-8">
+            <Image
               src={rankings[2]?.profileImage || "/default-profile.png"}
               alt={`${rankings[2]?.name} 프로필`}
+              width={128}
+              height={128}
               className="w-full h-full object-cover"
             />
           </div>
           <div className="mt-4">
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-green-800">
               {rankings[2]?.name}
             </h2>
-            <p className="text-3xl font-bold my-4 text-green-600">
-              {rankings[2]?.score}점
+            <p className="text-4xl font-bold my-4">
+              <span className="text-green-600">{rankings[2]?.score}점</span>
             </p>
             <div className="text-sm text-gray-600">
               <p>
-                승/패: {rankings[2]?.wins}/{rankings[2]?.losses}
+                승/패/무: {rankings[2]?.wins}/{rankings[2]?.losses}/
+                {rankings[2]?.draws}
               </p>
-              <p>참여: {rankings[2]?.totalGames}경기</p>
+              <p>입상: {rankings[2]?.achievementsScore}점</p>
             </div>
           </div>
         </div>
@@ -330,7 +347,10 @@ export default function Home() {
                   점수
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  승/패
+                  승/매/무
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  입상
                 </th>
               </tr>
             </thead>
@@ -351,7 +371,10 @@ export default function Home() {
                     {player.score}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {player.wins}/{player.losses}
+                    {player.wins}/{player.losses}/{player.draws}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {player.achievementsScore}
                   </td>
                 </tr>
               ))}
