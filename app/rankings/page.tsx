@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import ScoreInfoModal from "@/components/ScoreInfoModal";
 
 interface RankingData {
   rank: number;
@@ -24,6 +25,7 @@ export default function RankingsPage() {
   const [dateRange, setDateRange] = useState<"month" | "all">("month");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [showScoreInfo, setShowScoreInfo] = useState(false);
 
   useEffect(() => {
     const fetchRankings = async () => {
@@ -68,6 +70,16 @@ export default function RankingsPage() {
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">랭킹</h1>
+
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowScoreInfo(true)}
+          className="fixed bottom-4 right-4 w-10 h-10 rounded-full flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-2xl text-white transition-colors shadow-lg z-50"
+          title="점수 계산 방식"
+        >
+          🔢
+        </button>
+      </div>
 
       {/* 날짜 필터 */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
@@ -207,6 +219,10 @@ export default function RankingsPage() {
           등록된 경기 기록이 없습니다.
         </div>
       )}
+      <ScoreInfoModal
+        isOpen={showScoreInfo}
+        onClose={() => setShowScoreInfo(false)}
+      />
     </div>
   );
 }

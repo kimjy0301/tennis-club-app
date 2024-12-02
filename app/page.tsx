@@ -6,6 +6,7 @@ import GameHistoryModal from "@/components/GameHistoryModal";
 import { Game } from "@/types/game";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Image from "next/image";
+import ScoreInfoModal from "@/components/ScoreInfoModal";
 
 interface RankingData {
   rank: number;
@@ -32,6 +33,7 @@ export default function Home() {
   const [dateRange] = useState<"month" | "all">("month");
   const [startDate] = useState("");
   const [endDate] = useState("");
+  const [showScoreInfo, setShowScoreInfo] = useState(false);
 
   useEffect(() => {
     const fetchRankings = async () => {
@@ -103,9 +105,18 @@ export default function Home() {
     <div className="max-w-4xl mx-auto p-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">이달의 랭킹</h1>
-        <Link href="/rankings" className="tennis-button">
-          전체 랭킹 보기
-        </Link>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowScoreInfo(true)}
+            className="fixed bottom-4 right-4 w-10 h-10 rounded-full flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-2xl text-white transition-colors shadow-lg z-50"
+            title="점수 계산 방식"
+          >
+            🔢
+          </button>
+          <Link href="/rankings" className="tennis-button">
+            전체 랭킹 보기
+          </Link>
+        </div>
       </div>
 
       {/* 모바일 레이아웃 */}
@@ -395,6 +406,11 @@ export default function Home() {
         playerName={selectedPlayer || ""}
         games={playerGames}
         loading={loadingGames}
+      />
+
+      <ScoreInfoModal
+        isOpen={showScoreInfo}
+        onClose={() => setShowScoreInfo(false)}
       />
     </div>
   );
