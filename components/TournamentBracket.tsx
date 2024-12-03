@@ -224,7 +224,7 @@ const TournamentBracket = () => {
           step: 0.05,
           smoothStep: 0.002,
         }}
-        pinch={{ disabled: false }}
+        pinch={{ disabled: false, step: 0.05 }}
         panning={{
           disabled: false,
           velocityDisabled: false,
@@ -233,7 +233,6 @@ const TournamentBracket = () => {
         }}
         disablePadding={true}
         doubleClick={{ disabled: true }} // 더블클릭 비활성화
-        centerOnInit={true} // 초기 중앙 정렬
       >
         <TransformComponent
           wrapperStyle={{
