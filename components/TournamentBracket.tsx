@@ -1,4 +1,5 @@
 import React from "react";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import styles from "./TournamentBracket.module.css";
 
 interface Player {
@@ -210,67 +211,98 @@ const TournamentBracket = () => {
   ];
 
   return (
-    <div className={styles.bracketContainer}>
-      {[1, 2, 3, 4, 5].map((round) => (
-        <div key={round} className={styles.round}>
-          {matches
-            .filter((match) => match.round === round)
-            .map((match, index) => (
-              <div key={match.id} className={styles.match}>
-                <div
-                  className={`${styles.player} ${
-                    match.player1.isBye ? styles.bye : ""
-                  }`}
-                >
-                  {!match.player1.isBye && (
-                    <>
-                      <span className={styles.playerName}>
-                        {match.player1.name}
-                      </span>
-                      {match.player1.team && (
-                        <span className={styles.playerTeam}>
-                          ({match.player1.team})
-                        </span>
+    <div className={styles.wrapperContainer}>
+      <TransformWrapper
+        initialScale={1}
+        minScale={1}
+        maxScale={2}
+        limitToBounds={true}
+        smooth={false}
+        initialPositionX={0}
+        initialPositionY={0}
+        wheel={{
+          step: 0.05,
+          smoothStep: 0.002,
+        }}
+        panning={{
+          disabled: false,
+          velocityDisabled: false,
+          lockAxisX: false,
+          lockAxisY: false,
+        }}
+      >
+        <TransformComponent
+          wrapperStyle={{
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <div className={styles.bracketContainer}>
+            {[1, 2, 3, 4, 5].map((round) => (
+              <div key={round} className={styles.round}>
+                {matches
+                  .filter((match) => match.round === round)
+                  .map((match, index) => (
+                    <div key={match.id} className={styles.match}>
+                      <div
+                        className={`${styles.player} ${
+                          match.player1.isBye ? styles.bye : ""
+                        }`}
+                      >
+                        {!match.player1.isBye && (
+                          <>
+                            <span className={styles.playerName}>
+                              {match.player1.name}
+                            </span>
+                            {match.player1.team && (
+                              <span className={styles.playerTeam}>
+                                ({match.player1.team})
+                              </span>
+                            )}
+                          </>
+                        )}
+                        {match.player1.isBye && "bye"}
+                      </div>
+                      <div
+                        className={`${styles.player} ${
+                          match.player2.isBye ? styles.bye : ""
+                        }`}
+                      >
+                        {!match.player2.isBye && (
+                          <>
+                            <span className={styles.playerName}>
+                              {match.player2.name}
+                            </span>
+                            {match.player2.team && (
+                              <span className={styles.playerTeam}>
+                                ({match.player2.team})
+                              </span>
+                            )}
+                          </>
+                        )}
+                        {match.player2.isBye && "bye"}
+                      </div>
+                      {round < 5 && <div className={styles.connector} />}
+                      {round < 5 &&
+                        (index % 2 === 0 ? (
+                          <div
+                            className={`${styles.verticalLine} ${styles.verticalLineDown}`}
+                          />
+                        ) : (
+                          <div
+                            className={`${styles.verticalLine} ${styles.verticalLineUp}`}
+                          />
+                        ))}
+                      {round > 1 && (
+                        <div className={styles.connectorToPrevious} />
                       )}
-                    </>
-                  )}
-                  {match.player1.isBye && "bye"}
-                </div>
-                <div
-                  className={`${styles.player} ${
-                    match.player2.isBye ? styles.bye : ""
-                  }`}
-                >
-                  {!match.player2.isBye && (
-                    <>
-                      <span className={styles.playerName}>
-                        {match.player2.name}
-                      </span>
-                      {match.player2.team && (
-                        <span className={styles.playerTeam}>
-                          ({match.player2.team})
-                        </span>
-                      )}
-                    </>
-                  )}
-                  {match.player2.isBye && "bye"}
-                </div>
-                {round < 5 && <div className={styles.connector} />}
-                {round < 5 &&
-                  (index % 2 === 0 ? (
-                    <div
-                      className={`${styles.verticalLine} ${styles.verticalLineDown}`}
-                    />
-                  ) : (
-                    <div
-                      className={`${styles.verticalLine} ${styles.verticalLineUp}`}
-                    />
+                    </div>
                   ))}
-                {round > 1 && <div className={styles.connectorToPrevious} />}
               </div>
             ))}
-        </div>
-      ))}
+          </div>
+        </TransformComponent>
+      </TransformWrapper>
     </div>
   );
 };

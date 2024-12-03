@@ -1,7 +1,22 @@
+.wrapperContainer {
+  width: 100%;
+  height: 80vh;
+  overflow: hidden;
+  position: relative;
+  background: #f5f5f5;
+}
+
 .bracketContainer {
   display: flex;
   gap: 40px;
-  padding: 20px;
+  padding: 60px;
+  min-width: fit-content;
+  min-height: fit-content;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  height: 100%;
 }
 
 .round {
@@ -110,4 +125,9 @@
 
 .round:nth-child(5) .match {
   margin: 240px 0;
+}
+
+.transformWrapper :global(.react-transform-wrapper) {
+  width: 100% !important;
+  height: 100% !important;
 }
