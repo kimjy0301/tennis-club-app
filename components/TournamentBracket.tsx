@@ -226,7 +226,7 @@ const TournamentBracket = () => {
   return (
     <div className={styles.wrapperContainer}>
       <TransformWrapper
-        initialScale={1.2}
+        initialScale={0.8}
         minScale={0.5}
         maxScale={3}
         limitToBounds={true}
