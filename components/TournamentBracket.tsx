@@ -213,13 +213,11 @@ const TournamentBracket = () => {
   return (
     <div className={styles.wrapperContainer}>
       <TransformWrapper
-        initialScale={0.8}
+        initialScale={0.5}
         minScale={0.5}
         maxScale={3}
         limitToBounds={true}
         smooth={true}
-        initialPositionX={0}
-        initialPositionY={0}
         wheel={{
           step: 0.05,
           smoothStep: 0.002,
@@ -232,6 +230,7 @@ const TournamentBracket = () => {
           lockAxisY: false,
         }}
         disablePadding={true}
+        centerOnInit={true}
         doubleClick={{ disabled: true }} // 더블클릭 비활성화
       >
         <TransformComponent
