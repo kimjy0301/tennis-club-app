@@ -1,0 +1,79 @@
+.bracketContainer {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  gap: 40px;
+  font-size: 12px;
+}
+
+.round {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.match {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  width: 120px;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+}
+
+.playerName {
+  flex: 1;
+}
+
+.playerTeam {
+  color: #666;
+  font-size: 11px;
+  margin-right: 4px;
+}
+
+.connector {
+  position: absolute;
+  width: 40px;
+  height: 50px;
+  right: -40px;
+  top: 0;
+  background-image: url("/images/bracket-connector.svg");
+  background-repeat: no-repeat;
+}
+
+/* 라운드별 간격 조정 */
+.round:nth-child(1) .match {
+  margin-bottom: 24px;
+}
+
+.round:nth-child(2) .match {
+  margin-bottom: 48px;
+  margin-top: 12px;
+}
+
+.round:nth-child(3) .match {
+  margin-bottom: 96px;
+  margin-top: 24px;
+}
+
+.round:nth-child(4) .match {
+  margin-bottom: 192px;
+  margin-top: 48px;
+}
+
+.round:nth-child(5) .match {
+  margin-bottom: 384px;
+  margin-top: 96px;
+}
+
+.bye {
+  color: #999;
+}

@@ -1,0 +1,14 @@
+# API Params 규칙
+- API에서 Params를 사용할 때는 Promise를 사용하고 await 구문으로 처리해야 합니다.
+- 예시:
+export async function GET(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        // ... 코드 ...
+    } catch (error) {
+        // 에러 처리
+    }
+}

@@ -16,11 +16,15 @@ model Game {
 }
 
 model Player {
-  id           Int           @id @default(autoincrement())
-  name         String
-  profileImage String?
-  achievements Achievement[]
-  playerGames  PlayerGame[]
+  id               Int              @id @default(autoincrement())
+  name             String
+  profileImage     String?
+  achievements     Achievement[]
+  playerGames      PlayerGame[]
+  matchesAsPlayer1 TournamentMatch[] @relation("Player1Matches")
+  matchesAsPlayer2 TournamentMatch[] @relation("Player2Matches")
+  matchesAsWinner  TournamentMatch[] @relation("WinnerMatches")
+  tournaments      TournamentPlayer[]
 }
 
 model PlayerGame {
@@ -47,4 +51,50 @@ model Achievement {
   player      Player   @relation(fields: [playerId], references: [id])
 
   @@index([playerId], map: "Achievement_playerId_fkey")
+}
+
+model Tournament {
+  id          Int              @id @default(autoincrement())
+  name        String           
+  startDate   DateTime
+  endDate     DateTime
+  status      String           
+  description String?
+  matches     TournamentMatch[]
+  players     TournamentPlayer[]
+}
+
+model TournamentMatch {
+  id           Int        @id @default(autoincrement())
+  tournamentId Int
+  round        Int        // 1: 8강, 2: 4강, 3: 결승 등
+  matchOrder   Int        // 같은 라운드에서의 순서
+  player1Id    Int?       // null인 경우 아직 결정되지 않은 선수
+  player2Id    Int?
+  winnerId     Int?       // 승자 ID
+  score1       Int?       // player1의 점수
+  score2       Int?       // player2의 점수
+  playedAt     DateTime?  // 실제 경기 진행 날짜
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  player1      Player?    @relation("Player1Matches", fields: [player1Id], references: [id])
+  player2      Player?    @relation("Player2Matches", fields: [player2Id], references: [id])
+  winner       Player?    @relation("WinnerMatches", fields: [winnerId], references: [id])
+
+  @@index([tournamentId])
+  @@index([player1Id])
+  @@index([player2Id])
+  @@index([winnerId])
+}
+
+model TournamentPlayer {
+  id           Int        @id @default(autoincrement())
+  tournamentId Int
+  playerId     Int
+  seedNumber   Int?       // 시드 배정 번호 (선택사항)
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  player       Player     @relation(fields: [playerId], references: [id])
+
+  @@unique([tournamentId, playerId])
+  @@index([tournamentId])
+  @@index([playerId])
 }

@@ -1,0 +1,113 @@
+.bracketContainer {
+  display: flex;
+  gap: 40px;
+  padding: 20px;
+}
+
+.round {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.match {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+}
+
+.player {
+  border: 1px solid #ccc;
+  padding: 10px;
+  min-width: 200px;
+  background: #f8f8f8;
+  position: relative;
+}
+
+.player:first-child {
+  border-bottom: none;
+}
+
+.playerName {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.playerTeam {
+  color: #666;
+}
+
+.bye {
+  color: #999;
+  font-style: italic;
+}
+
+/* 선 연결을 위한 스타일 */
+.connector {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  width: 20px;
+  height: 2px;
+  background: #ff6b6b;
+}
+
+.verticalLine {
+  position: absolute;
+  right: -20px;
+  width: 2px;
+  background: #ff6b6b;
+}
+
+.verticalLineDown {
+  top: 50%;
+  height: calc(100% + 30px);
+}
+
+.verticalLineUp {
+  bottom: 50%;
+  height: calc(100% + 30px);
+}
+
+.connectorToPrevious {
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  width: 20px;
+  height: 2px;
+  background: #ff6b6b;
+}
+
+/* 라운드별 수직선 길이 조정 */
+.round:nth-child(2) .verticalLineDown,
+.round:nth-child(2) .verticalLineUp {
+  height: calc(100% + 60px);
+}
+
+.round:nth-child(3) .verticalLineDown,
+.round:nth-child(3) .verticalLineUp {
+  height: calc(100% + 160px);
+}
+
+.round:nth-child(4) .verticalLineDown,
+.round:nth-child(4) .verticalLineUp {
+  height: calc(100% + 400px);
+}
+
+/* 라운드별 매치 간격 조정 */
+.round:nth-child(2) .match {
+  margin: 30px 0;
+}
+
+.round:nth-child(3) .match {
+  margin: 60px 0;
+}
+
+.round:nth-child(4) .match {
+  margin: 120px 0;
+}
+
+.round:nth-child(5) .match {
+  margin: 240px 0;
+}
