@@ -210,19 +210,6 @@ const TournamentBracket = () => {
     },
   ];
 
-  // Prevent default touch behavior
-  React.useEffect(() => {
-    const preventDefault = (e: TouchEvent) => {
-      e.preventDefault();
-    };
-
-    document.addEventListener("touchmove", preventDefault, { passive: false });
-
-    return () => {
-      document.removeEventListener("touchmove", preventDefault);
-    };
-  }, []);
-
   return (
     <div className={styles.wrapperContainer}>
       <TransformWrapper
@@ -230,13 +217,14 @@ const TournamentBracket = () => {
         minScale={0.5}
         maxScale={3}
         limitToBounds={true}
-        smooth={false}
+        smooth={true}
         initialPositionX={0}
         initialPositionY={0}
         wheel={{
           step: 0.05,
           smoothStep: 0.002,
         }}
+        pinch={{ disabled: false }}
         panning={{
           disabled: false,
           velocityDisabled: false,
