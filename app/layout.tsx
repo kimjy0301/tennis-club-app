@@ -10,6 +10,13 @@ export const metadata = {
   description: "테니스 경기 기록 및 관리 시스템",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  maximumScale: 1.0,
+  userScalable: false,
+};
+
 export default function RootLayout({
   children,
 }: {

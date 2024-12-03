@@ -210,6 +210,19 @@ const TournamentBracket = () => {
     },
   ];
 
+  // Prevent default touch behavior
+  React.useEffect(() => {
+    const preventDefault = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+
+    document.addEventListener("touchmove", preventDefault, { passive: false });
+
+    return () => {
+      document.removeEventListener("touchmove", preventDefault);
+    };
+  }, []);
+
   return (
     <div className={styles.wrapperContainer}>
       <TransformWrapper
@@ -231,6 +244,8 @@ const TournamentBracket = () => {
           lockAxisY: false,
         }}
         disablePadding={true}
+        doubleClick={{ disabled: true }} // 더블클릭 비활성화
+        centerOnInit={true} // 초기 중앙 정렬
       >
         <TransformComponent
           wrapperStyle={{
