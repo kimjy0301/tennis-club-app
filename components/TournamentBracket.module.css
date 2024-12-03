@@ -5,6 +5,12 @@
   background: white;
 }
 
+@media screen and (max-width: 768px) {
+  .wrapperContainer {
+    height: 60vh;
+  }
+}
+
 .bracketContainer {
   display: flex;
   gap: 40px;
