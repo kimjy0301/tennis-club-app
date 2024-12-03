@@ -213,9 +213,9 @@ const TournamentBracket = () => {
   return (
     <div className={styles.wrapperContainer}>
       <TransformWrapper
-        initialScale={1}
-        minScale={1}
-        maxScale={2}
+        initialScale={1.2}
+        minScale={0.5}
+        maxScale={3}
         limitToBounds={true}
         smooth={false}
         initialPositionX={0}
@@ -230,6 +230,7 @@ const TournamentBracket = () => {
           lockAxisX: false,
           lockAxisY: false,
         }}
+        disablePadding={true}
       >
         <TransformComponent
           wrapperStyle={{
