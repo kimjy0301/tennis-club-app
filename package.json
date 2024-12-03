@@ -20,7 +20,7 @@
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
-    "react-zoom-pan-pinch": "^3.6.1"
+    "react-zoom-pan-pinch": "3.4.4"
   },
   "devDependencies": {
     "@types/node": "^20.17.7",
