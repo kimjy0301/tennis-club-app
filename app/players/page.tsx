@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import GameHistoryModal from "@/components/GameHistoryModal";
 import { Achievement } from "@/types/game";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 interface PlayerStats {
   id: number;
@@ -149,11 +150,7 @@ export default function PlayerStats() {
   const selectedPlayer = players.find((p) => p.id === selectedPlayerId)?.name;
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
