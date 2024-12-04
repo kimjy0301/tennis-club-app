@@ -53,8 +53,26 @@ export async function GET(request: Request) {
         // 아직 업적 점수가 계산되지 않은 경우에만 계산
         if (!stats.achievementsCalculated) {
           // 해당 선수의 모든 업적 조회
+          const achievementsWhereCondition: {
+            playerId: number;
+            date?: {
+              gte?: Date;
+              lte?: Date;
+            };
+          } = {
+            playerId: player.id,
+          };
+
+          // startDate와 endDate가 있는 경우 날짜 조건 추가
+          if (startDate && endDate) {
+            achievementsWhereCondition.date = {
+              gte: new Date(startDate),
+              lte: new Date(endDate),
+            };
+          }
+
           const achievements = await prisma.achievement.findMany({
-            where: { playerId: player.id },
+            where: achievementsWhereCondition,
           });
 
           // 업적 점수 합산을 achievementsScore에 저장
