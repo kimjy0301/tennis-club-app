@@ -73,10 +73,10 @@ export default function RankingsPage() {
       <div className="flex gap-2">
         <button
           onClick={() => setShowScoreInfo(true)}
-          className="fixed bottom-4 right-4 w-10 h-10 rounded-full flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-2xl text-white transition-colors shadow-lg z-50"
+          className="fixed bottom-4 right-4 w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-2xl text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 z-50 border-2 border-white/30 backdrop-blur-sm"
           title="점수 계산 방식"
         >
-          🔢
+          <span className="text-2xl font-bold">?</span>
         </button>
       </div>
 
