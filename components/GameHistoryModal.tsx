@@ -237,15 +237,17 @@ export default function GameHistoryModal({
                   >
                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-4">
-                          <div className="px-3 py-1 bg-gray-50 rounded-full text-sm text-gray-600 font-medium">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-4">
+                          <div className="px-3 py-1 bg-gray-50 rounded-full text-sm text-gray-600 font-semibold">
                             {formatDate(achievement.date)}
                           </div>
-                          <div className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
-                            {achievement.rank}
-                          </div>
-                          <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                            {achievement.points}점
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <div className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium text-center">
+                              {achievement.rank}
+                            </div>
+                            <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium text-center">
+                              +{achievement.points}점
+                            </div>
                           </div>
                         </div>
                         <div className="text-lg font-medium text-gray-800 mb-2">
