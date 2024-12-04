@@ -11,4 +11,14 @@ export interface Game {
     };
     team: string;
   }[];
-} 
+}
+
+export interface Achievement {
+  id: number;
+  title: string;
+  rank: string;
+  points: number;
+  date: string;
+  description?: string | null;
+  image?: string | null;
+}

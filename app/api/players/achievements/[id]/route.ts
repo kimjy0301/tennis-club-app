@@ -9,16 +9,40 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+
+    // 기본 where 조건 설정
+    const whereCondition: {
+      playerId: number;
+      date?: {
+        gte?: Date;
+        lte?: Date;
+      };
+    } = {
+      playerId: parseInt(id),
+    };
+
+    // startDate와 endDate가 있는 경우 날짜 조건 추가
+    if (startDate || endDate) {
+      whereCondition.date = {};
+      if (startDate) {
+        whereCondition.date.gte = new Date(startDate);
+      }
+      if (endDate) {
+        whereCondition.date.lte = new Date(endDate);
+      }
+    }
 
     const achievements = await prisma.achievement.findMany({
-      where: {
-        playerId: parseInt(id),
-      },
+      where: whereCondition,
       orderBy: {
-        date: "desc", // 최신 업적부터 표시
+        date: "desc",
       },
     });
 
+    console.log(achievements);
     return NextResponse.json(achievements);
   } catch (error) {
     console.error("Error fetching achievements:", error);

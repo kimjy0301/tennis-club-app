@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: Request,
@@ -8,29 +8,29 @@ export async function GET(
   try {
     const { id } = await params;
     const { searchParams } = new URL(request.url);
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
 
     const whereCondition: {
       playerGames: {
         some: {
           player: {
-            id: number
-          }
-        }
-      },
+            id: number;
+          };
+        };
+      };
       date?: {
-        gte: Date,
-        lte: Date
-      }
+        gte: Date;
+        lte: Date;
+      };
     } = {
       playerGames: {
         some: {
           player: {
-            id: parseInt(id)
-          }
-        }
-      }
+            id: parseInt(id),
+          },
+        },
+      },
     };
 
     if (startDate && endDate) {
@@ -45,13 +45,13 @@ export async function GET(
       include: {
         playerGames: {
           include: {
-            player: true
-          }
-        }
+            player: true,
+          },
+        },
       },
       orderBy: {
-        date: 'desc'
-      }
+        date: "desc",
+      },
     });
 
     if (!games || games.length === 0) {
@@ -60,13 +60,13 @@ export async function GET(
 
     return NextResponse.json({ games });
   } catch (error) {
-    console.error('Error fetching player games:', error);
+    console.error("Error fetching player games:", error);
     return NextResponse.json(
-      { 
-        error: 'Failed to fetch player games',
-        details: error instanceof Error ? error.message : 'Unknown error'
+      {
+        error: "Failed to fetch player games",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
   }
-} 
+}

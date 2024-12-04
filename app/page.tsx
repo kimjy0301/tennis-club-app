@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import GameHistoryModal from "@/components/GameHistoryModal";
-import { Game } from "@/types/game";
+import { Game, Achievement } from "@/types/game";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Image from "next/image";
 import ScoreInfoModal from "@/components/ScoreInfoModal";
@@ -28,6 +28,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [playerGames, setPlayerGames] = useState<Game[]>([]);
+  const [playerAchievements, setPlayerAchievements] = useState<Achievement[]>(
+    []
+  );
   const [loadingGames, setLoadingGames] = useState(false);
 
   const [dateRange] = useState<"month" | "all">("month");
@@ -67,6 +70,7 @@ export default function Home() {
 
     try {
       const url = `${API_URL}/api/players/${playerId}/games`;
+      const achievementsUrl = `${API_URL}/api/players/achievements/${playerId}`;
       const params = new URLSearchParams();
 
       if (dateRange === "month") {
@@ -83,15 +87,25 @@ export default function Home() {
 
       const queryString = params.toString();
       const finalUrl = queryString ? `${url}?${queryString}` : url;
+      const finalAchievementsUrl = queryString
+        ? `${achievementsUrl}?${queryString}`
+        : achievementsUrl;
 
-      const response = await fetch(finalUrl);
-      const data = await response.json();
+      // 게임 데이터와 업적 데이터를 병렬로 가져오기
+      const [gamesResponse, achievementsResponse] = await Promise.all([
+        fetch(finalUrl),
+        fetch(finalAchievementsUrl),
+      ]);
 
-      console.log(data);
+      const [gamesData, achievementsData] = await Promise.all([
+        gamesResponse.json(),
+        achievementsResponse.json(),
+      ]);
 
-      setPlayerGames(data);
+      setPlayerGames(gamesData);
+      setPlayerAchievements(achievementsData);
     } catch (error) {
-      console.error("Error fetching player games:", error);
+      console.error("Error fetching player data:", error);
     } finally {
       setLoadingGames(false);
     }
@@ -406,6 +420,7 @@ export default function Home() {
         playerName={selectedPlayer || ""}
         games={playerGames}
         loading={loadingGames}
+        achievements={playerAchievements}
       />
 
       <ScoreInfoModal
