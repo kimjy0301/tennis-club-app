@@ -194,7 +194,9 @@ export default function RankingsPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{player.score}</div>
+                    <div className="text-sm text-gray-900">
+                      {player.score - player.achievementsScore}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
