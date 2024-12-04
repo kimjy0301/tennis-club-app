@@ -152,7 +152,7 @@ export default function RankingsPage() {
                   입상
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  경기수
+                  점수
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   승/패/무
@@ -194,9 +194,7 @@ export default function RankingsPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {player.totalGames}
-                    </div>
+                    <div className="text-sm text-gray-900">{player.score}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
