@@ -42,7 +42,6 @@ export async function GET(
       },
     });
 
-    console.log(achievements);
     return NextResponse.json(achievements);
   } catch (error) {
     console.error("Error fetching achievements:", error);

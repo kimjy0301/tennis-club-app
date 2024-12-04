@@ -29,7 +29,7 @@ export default function RootLayout({
       >
         <Navbar />
         <main className="container mx-auto px-4 md:px-6 py-4 md:py-8">
-          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+          <Suspense fallback={<div></div>}>{children}</Suspense>
         </main>
         <div className="fixed -bottom-20 -left-20 w-40 h-40 bg-yellow-300 rounded-full opacity-10 pointer-events-none"></div>
         <div className="fixed -top-20 -right-20 w-40 h-40 bg-yellow-300 rounded-full opacity-10 pointer-events-none"></div>
