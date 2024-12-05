@@ -33,9 +33,6 @@ export default function Home() {
   );
   const [loadingGames, setLoadingGames] = useState(false);
 
-  const [dateRange] = useState<"month" | "all">("month");
-  const [startDate] = useState("");
-  const [endDate] = useState("");
   const [showScoreInfo, setShowScoreInfo] = useState(false);
 
   // 현재 상/하반기 계산을 위한 함수
