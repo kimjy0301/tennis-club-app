@@ -8,6 +8,7 @@ interface Player {
   id: number;
   name: string;
   profileImage?: string;
+  isGuest?: boolean;
 }
 
 interface Game {
@@ -20,6 +21,7 @@ interface Game {
       id: number;
       name: string;
       profileImage?: string;
+      isGuest?: boolean;
     };
     team: string;
   }[];
@@ -159,11 +161,19 @@ export default function VersusPage() {
             className="tennis-input w-full"
           >
             <option value="">선수 선택</option>
-            {players.map((player) => (
-              <option key={player.id} value={player.id}>
-                {player.name}
-              </option>
-            ))}
+            {players
+              .sort((a, b) => {
+                // 게스트를 마지막으로 정렬
+                if (a.isGuest && !b.isGuest) return 1;
+                if (!a.isGuest && b.isGuest) return -1;
+                return a.name.localeCompare(b.name);
+              })
+              .map((player) => (
+                <option key={player.id} value={player.id}>
+                  {player.name}
+                  {player.isGuest ? " (게스트)" : ""}
+                </option>
+              ))}
           </select>
         </div>
 
@@ -180,9 +190,16 @@ export default function VersusPage() {
             <option value="">선수 선택</option>
             {players
               .filter((player) => player.id !== player1Id)
+              .sort((a, b) => {
+                // 게스트를 마지막으로 정렬
+                if (a.isGuest && !b.isGuest) return 1;
+                if (!a.isGuest && b.isGuest) return -1;
+                return a.name.localeCompare(b.name);
+              })
               .map((player) => (
                 <option key={player.id} value={player.id}>
                   {player.name}
+                  {player.isGuest ? " (게스트)" : ""}
                 </option>
               ))}
           </select>
