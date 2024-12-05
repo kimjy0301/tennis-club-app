@@ -73,7 +73,11 @@ export default function GameDetail() {
       });
 
       if (response.ok) {
-        router.push("/");
+        if (previousDate) {
+          router.push(`/games?date=${encodeURIComponent(previousDate)}`);
+        } else {
+          router.push("/");
+        }
       } else {
         throw new Error("Failed to delete");
       }
