@@ -18,6 +18,7 @@ model Game {
 model Player {
   id               Int              @id @default(autoincrement())
   name             String
+  isGuest          Boolean          @default(false)
   profileImage     String?
   achievements     Achievement[]
   playerGames      PlayerGame[]

@@ -4,17 +4,23 @@ import { useState, useEffect } from "react";
 
 interface Player {
   id: number;
+  name: string;
+  isGuest: boolean;
+}
 
+interface GuestPlayer {
+  isGuest: true;
   name: string;
 }
 
-export default function NewGame() {
+type TeamPlayer = number | GuestPlayer;
 
+export default function NewGame() {
   const [players, setPlayers] = useState<Player[]>([]);
 
-  const [teamA, setTeamA] = useState<number[]>([]);
+  const [teamA, setTeamA] = useState<TeamPlayer[]>([]);
 
-  const [teamB, setTeamB] = useState<number[]>([]);
+  const [teamB, setTeamB] = useState<TeamPlayer[]>([]);
 
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 
@@ -27,6 +33,10 @@ export default function NewGame() {
   const [error, setError] = useState("");
 
   const [showNotification, setShowNotification] = useState(false);
+
+  const [isGuestA, setIsGuestA] = useState<boolean[]>([false, false]);
+
+  const [isGuestB, setIsGuestB] = useState<boolean[]>([false, false]);
 
   useEffect(() => {
     fetchPlayers();
@@ -46,30 +56,34 @@ export default function NewGame() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setLoading(true);
-
     setError("");
 
     const playerGames = [
-      ...teamA.map((id) => ({ playerId: id, team: "A" })),
-
-      ...teamB.map((id) => ({ playerId: id, team: "B" })),
+      ...teamA.map((player) => {
+        if (typeof player === "number") {
+          return { team: "A", playerId: player };
+        } else {
+          return { team: "A", guestPlayerName: player.name };
+        }
+      }),
+      ...teamB.map((player) => {
+        if (typeof player === "number") {
+          return { team: "B", playerId: player };
+        } else {
+          return { team: "B", guestPlayerName: player.name };
+        }
+      }),
     ];
 
     try {
       const response = await fetch("/api/games", {
         method: "POST",
-
         headers: { "Content-Type": "application/json" },
-
         body: JSON.stringify({
           date,
-
           scoreTeamA: scoreA,
-
           scoreTeamB: scoreB,
-
           playerGames,
         }),
       });
@@ -92,18 +106,21 @@ export default function NewGame() {
 
   const getAvailablePlayers = (team: "A" | "B", currentIndex: number) => {
     const selectedPlayers = team === "A" ? teamA : teamB;
-
     const otherTeamPlayers = team === "A" ? teamB : teamA;
 
-    return players.filter(
+    const filteredPlayers = players.filter(
       (player) =>
         !otherTeamPlayers.includes(player.id) &&
         (!selectedPlayers.includes(player.id) ||
           selectedPlayers[currentIndex] === player.id)
     );
+
+    return [
+      ...filteredPlayers.filter((player) => !player.isGuest),
+      ...filteredPlayers.filter((player) => player.isGuest),
+    ];
   };
 
-  
   return (
     <div className="max-w-4xl mx-auto p-4">
       {showNotification && (
@@ -258,34 +275,85 @@ export default function NewGame() {
 
               <div className="space-y-3">
                 {[0, 1].map((index) => (
-                  <select
-                    key={`A-${index}`}
-                    value={teamA[index] || ""}
-                    onChange={(e) => {
-                      const newValue = e.target.value
-                        ? parseInt(e.target.value)
-                        : undefined;
+                  <div key={`A-${index}`} className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`guestA-${index}`}
+                        checked={isGuestA[index]}
+                        onChange={(e) => {
+                          const newIsGuestA = [...isGuestA];
+                          newIsGuestA[index] = e.target.checked;
+                          setIsGuestA(newIsGuestA);
 
-                      const newTeamA = [...teamA];
+                          const newTeamA = [...teamA];
+                          if (e.target.checked) {
+                            newTeamA[index] = { isGuest: true, name: "" };
+                          }
+                          setTeamA(newTeamA.filter(Boolean));
+                        }}
+                        className="tennis-checkbox"
+                      />
+                      <label
+                        htmlFor={`guestA-${index}`}
+                        className="text-sm text-gray-600"
+                      >
+                        게스트 선수
+                      </label>
+                    </div>
 
-                      if (newValue) {
-                        newTeamA[index] = newValue;
-                      } else {
-                        newTeamA.splice(index, 1);
-                      }
-
-                      setTeamA(newTeamA.filter(Boolean));
-                    }}
-                    className="tennis-input w-full py-3 bg-white"
-                  >
-                    <option value="">선수 선택</option>
-
-                    {getAvailablePlayers("A", index).map((player) => (
-                      <option key={player.id} value={player.id}>
-                        {player.name}
-                      </option>
-                    ))}
-                  </select>
+                    {isGuestA[index] ? (
+                      <input
+                        type="text"
+                        placeholder="게스트 이름 입력"
+                        value={
+                          typeof teamA[index] === "object"
+                            ? teamA[index].name
+                            : ""
+                        }
+                        onChange={(e) => {
+                          const newTeamA = [...teamA];
+                          newTeamA[index] = {
+                            isGuest: true,
+                            name: e.target.value,
+                          };
+                          setTeamA(newTeamA);
+                        }}
+                        className="tennis-input w-full py-3"
+                      />
+                    ) : (
+                      <select
+                        value={
+                          typeof teamA[index] === "number" ? teamA[index] : ""
+                        }
+                        onChange={(e) => {
+                          const newValue = e.target.value
+                            ? parseInt(e.target.value)
+                            : undefined;
+                          const newTeamA = [...teamA];
+                          if (newValue) {
+                            newTeamA[index] = newValue;
+                          } else {
+                            newTeamA.splice(index, 1);
+                          }
+                          setTeamA(newTeamA.filter(Boolean));
+                        }}
+                        className="tennis-input w-full py-3 bg-white"
+                      >
+                        <option value="">선수 선택</option>
+                        {getAvailablePlayers("A", index).map((player) => {
+                          const displayName = `${player.name}${
+                            player.isGuest ? " (게스트)" : ""
+                          }`;
+                          return (
+                            <option key={player.id} value={player.id}>
+                              {displayName}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -297,34 +365,85 @@ export default function NewGame() {
 
               <div className="space-y-3">
                 {[0, 1].map((index) => (
-                  <select
-                    key={`B-${index}`}
-                    value={teamB[index] || ""}
-                    onChange={(e) => {
-                      const newValue = e.target.value
-                        ? parseInt(e.target.value)
-                        : undefined;
+                  <div key={`B-${index}`} className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`guestB-${index}`}
+                        checked={isGuestB[index]}
+                        onChange={(e) => {
+                          const newIsGuestB = [...isGuestB];
+                          newIsGuestB[index] = e.target.checked;
+                          setIsGuestB(newIsGuestB);
 
-                      const newTeamB = [...teamB];
+                          const newTeamB = [...teamB];
+                          if (e.target.checked) {
+                            newTeamB[index] = { isGuest: true, name: "" };
+                          }
+                          setTeamB(newTeamB.filter(Boolean));
+                        }}
+                        className="tennis-checkbox"
+                      />
+                      <label
+                        htmlFor={`guestB-${index}`}
+                        className="text-sm text-gray-600"
+                      >
+                        게스트 선수
+                      </label>
+                    </div>
 
-                      if (newValue) {
-                        newTeamB[index] = newValue;
-                      } else {
-                        newTeamB.splice(index, 1);
-                      }
-
-                      setTeamB(newTeamB.filter(Boolean));
-                    }}
-                    className="tennis-input w-full py-3"
-                  >
-                    <option value="">선수 선택</option>
-
-                    {getAvailablePlayers("B", index).map((player) => (
-                      <option key={player.id} value={player.id}>
-                        {player.name}
-                      </option>
-                    ))}
-                  </select>
+                    {isGuestB[index] ? (
+                      <input
+                        type="text"
+                        placeholder="게스트 이름 입력"
+                        value={
+                          typeof teamB[index] === "object"
+                            ? teamB[index].name
+                            : ""
+                        }
+                        onChange={(e) => {
+                          const newTeamB = [...teamB];
+                          newTeamB[index] = {
+                            isGuest: true,
+                            name: e.target.value,
+                          };
+                          setTeamB(newTeamB);
+                        }}
+                        className="tennis-input w-full py-3"
+                      />
+                    ) : (
+                      <select
+                        value={
+                          typeof teamB[index] === "number" ? teamB[index] : ""
+                        }
+                        onChange={(e) => {
+                          const newValue = e.target.value
+                            ? parseInt(e.target.value)
+                            : undefined;
+                          const newTeamB = [...teamB];
+                          if (newValue) {
+                            newTeamB[index] = newValue;
+                          } else {
+                            newTeamB.splice(index, 1);
+                          }
+                          setTeamB(newTeamB.filter(Boolean));
+                        }}
+                        className="tennis-input w-full py-3 bg-white"
+                      >
+                        <option value="">선수 선택</option>
+                        {getAvailablePlayers("B", index).map((player) => {
+                          const displayName = `${player.name}${
+                            player.isGuest ? " (게스트)" : ""
+                          }`;
+                          return (
+                            <option key={player.id} value={player.id}>
+                              {displayName}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
