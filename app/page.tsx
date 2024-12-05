@@ -38,15 +38,27 @@ export default function Home() {
   const [endDate] = useState("");
   const [showScoreInfo, setShowScoreInfo] = useState(false);
 
+  // 현재 상/하반기 계산을 위한 함수
+  const getCurrentPeriod = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const isFirstHalf = month <= 6;
+
+    return {
+      title: `${year}년 ${isFirstHalf ? "상반기" : "하반기"}`,
+      startDate: new Date(year, isFirstHalf ? 0 : 6, 1),
+      endDate: new Date(year, isFirstHalf ? 5 : 11, 31, 23, 59, 59, 999),
+    };
+  };
+
   useEffect(() => {
     const fetchRankings = async () => {
       try {
-        // 최근 1개월 데이터만 가져오기
-        const monthAgo = new Date();
-        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        const period = getCurrentPeriod();
         const params = new URLSearchParams({
-          startDate: monthAgo.toISOString(),
-          endDate: new Date().toISOString(),
+          startDate: period.startDate.toISOString(),
+          endDate: period.endDate.toISOString(),
         });
 
         const response = await fetch(`${API_URL}/api/rankings?${params}`);
@@ -69,21 +81,14 @@ export default function Home() {
     setLoadingGames(true);
 
     try {
+      const period = getCurrentPeriod();
+      const params = new URLSearchParams({
+        startDate: period.startDate.toISOString(),
+        endDate: period.endDate.toISOString(),
+      });
+
       const url = `${API_URL}/api/players/${playerId}/games`;
       const achievementsUrl = `${API_URL}/api/players/achievements/${playerId}`;
-      const params = new URLSearchParams();
-
-      if (dateRange === "month") {
-        const monthAgo = new Date();
-        monthAgo.setMonth(monthAgo.getMonth() - 1);
-        params.append("startDate", monthAgo.toISOString());
-        params.append("endDate", new Date().toISOString());
-      } else if (dateRange === "all" && startDate && endDate) {
-        const endDateTime = new Date(endDate);
-        endDateTime.setHours(23, 59, 59, 999);
-        params.append("startDate", new Date(startDate).toISOString());
-        params.append("endDate", endDateTime.toISOString());
-      }
 
       const queryString = params.toString();
       const finalUrl = queryString ? `${url}?${queryString}` : url;
@@ -118,7 +123,9 @@ export default function Home() {
   return (
     <div className="max-w-4xl mx-auto p-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">이달의 랭킹</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {getCurrentPeriod().title} 랭킹
+        </h1>
         <div className="flex gap-2">
           <button
             onClick={() => setShowScoreInfo(true)}
