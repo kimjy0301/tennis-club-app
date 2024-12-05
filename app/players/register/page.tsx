@@ -1,38 +1,45 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function PlayerRegister() {
   const router = useRouter();
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [password, setPassword] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState('');
+  const [password, setPassword] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // 브라우저에서만 실행되도록 체크
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("isAuthenticated") === "true";
+    }
+    return false;
+  });
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/auth/verify', {
-        method: 'POST',
+      const response = await fetch("/api/auth/verify", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ password }),
       });
 
       if (response.ok) {
         setIsAuthenticated(true);
-        setError('');
+        localStorage.setItem("isAuthenticated", "true"); // 인증 상태 저장
+        setError("");
       } else {
-        setError('비밀번호가 올바르지 않습니다.');
+        setError("비밀번호가 올바르지 않습니다.");
       }
-    } catch  {
-      setError('인증 과정에서 오류가 발생했습니다.');
+    } catch {
+      setError("인증 과정에서 오류가 발생했습니다.");
     }
   };
 
@@ -50,30 +57,32 @@ export default function PlayerRegister() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !profileImage) {
-      setError('모든 필드를 입력해주세요.');
+    if (!name.trim()) {
+      setError("모든 필드를 입력해주세요.");
       return;
     }
 
     setLoading(true);
     const formData = new FormData();
-    formData.append('name', name);
-    formData.append('profileImage', profileImage);
+    formData.append("name", name);
+    if (profileImage) {
+      formData.append("profileImage", profileImage);
+    }
 
     try {
-      const response = await fetch('/api/players/register', {
-        method: 'POST',
+      const response = await fetch("/api/players/register", {
+        method: "POST",
         body: formData,
       });
 
       if (response.ok) {
-        router.push('/players/list');
+        router.push("/players/list");
       } else {
         const data = await response.json();
-        setError(data.error || '선수 등록에 실패했습니다.');
+        setError(data.error || "선수 등록에 실패했습니다.");
       }
-    } catch  {
-      setError('선수 등록 중 오류가 발생했습니다.');
+    } catch {
+      setError("선수 등록 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
@@ -85,7 +94,10 @@ export default function PlayerRegister() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">관리자 인증</h2>
         <form onSubmit={handleAuth} className="space-y-4">
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               비밀번호
             </label>
             <input
@@ -97,13 +109,8 @@ export default function PlayerRegister() {
               placeholder="관리자 비밀번호를 입력하세요"
             />
           </div>
-          {error && (
-            <p className="text-red-500 text-sm">{error}</p>
-          )}
-          <button
-            type="submit"
-            className="tennis-button w-full"
-          >
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <button type="submit" className="tennis-button w-full">
             인증하기
           </button>
         </form>
@@ -116,7 +123,10 @@ export default function PlayerRegister() {
       <h2 className="text-2xl font-bold text-gray-900 mb-6">선수 등록</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
             선수명
           </label>
           <input
@@ -145,7 +155,7 @@ export default function PlayerRegister() {
               </div>
             )}
             <label className="tennis-button cursor-pointer">
-              <span>{imagePreview ? '사진 변경' : '사진 선택'}</span>
+              <span>{imagePreview ? "사진 변경" : "사진 선택"}</span>
               <input
                 type="file"
                 className="hidden"
@@ -156,18 +166,16 @@ export default function PlayerRegister() {
           </div>
         </div>
 
-        {error && (
-          <p className="text-red-500 text-sm">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <button
           type="submit"
           className="tennis-button w-full"
           disabled={loading}
         >
-          {loading ? '등록 중...' : '선수 등록'}
+          {loading ? "등록 중..." : "선수 등록"}
         </button>
       </form>
     </div>
   );
-} 
+}

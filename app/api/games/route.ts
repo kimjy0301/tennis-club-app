@@ -4,9 +4,6 @@ import { prisma } from "@/lib/prisma";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
-    console.log(body);
-
     // Validate that playerGames array exists
     if (!body.playerGames || !Array.isArray(body.playerGames)) {
       return NextResponse.json(
@@ -17,36 +14,42 @@ export async function POST(request: Request) {
 
     // playerGames 배열을 가공하여 게스트와 등록된 플레이어를 구분 처리
     const processedPlayerGames = await Promise.all(
-      body.playerGames.map(async (pg: any) => {
-        if (pg.playerId) {
-          return {
-            team: pg.team,
-            playerId: pg.playerId,
-          };
-        } else {
-          // 동일한 이름의 플레이어가 있는지 먼저 확인
-          const existingPlayer = await prisma.player.findFirst({
-            where: {
-              name: pg.guestPlayerName,
-            },
-          });
-
-          // 기존 플레이어가 있으면 그 플레이어 사용, 없으면 새로 생성
-          const player =
-            existingPlayer ||
-            (await prisma.player.create({
-              data: {
+      body.playerGames.map(
+        async (pg: {
+          team: string;
+          playerId?: number;
+          guestPlayerName?: string;
+        }) => {
+          if (pg.playerId) {
+            return {
+              team: pg.team,
+              playerId: pg.playerId,
+            };
+          } else {
+            // 동일한 이름의 플레이어가 있는지 먼저 확인
+            const existingPlayer = await prisma.player.findFirst({
+              where: {
                 name: pg.guestPlayerName,
-                isGuest: true,
               },
-            }));
+            });
 
-          return {
-            team: pg.team,
-            playerId: player.id,
-          };
+            // 기존 플레이어가 있으면 그 플레이어 사용, 없으면 새로 생성
+            const player =
+              existingPlayer ||
+              (await prisma.player.create({
+                data: {
+                  name: pg.guestPlayerName || "",
+                  isGuest: true,
+                },
+              }));
+
+            return {
+              team: pg.team,
+              playerId: player.id,
+            };
+          }
         }
-      })
+      )
     );
 
     const game = await prisma.game.create({
