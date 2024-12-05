@@ -33,7 +33,7 @@ export default function RootLayout({
         </main>
         <footer className="text-center py-6 bg-gradient-to-br from-green-500 to-green-800 text-white shadow-lg">
           <p className="text-sm font-semibold ">Created by: Jiyong Kim </p>
-          <p className="text-sm mt-2">+82 10-8807-0301</p>
+          <p className="text-sm mt-2">010-8807-0301</p>
           <p className="text-sm mt-2">© 2024 All Rights Reserved</p>
         </footer>
         <div className="fixed -bottom-20 -left-20 w-40 h-40 bg-yellow-300 rounded-full opacity-10 pointer-events-none"></div>

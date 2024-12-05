@@ -59,6 +59,27 @@ export default function NewGame() {
     setLoading(true);
     setError("");
 
+    if (scoreA === "" || scoreB === "") {
+      setError("점수를 입력해주세요.");
+      setLoading(false);
+      return;
+    }
+
+    if (teamA.length !== 2 || teamB.length !== 2) {
+      setError("각 팀의 선수를 모두 선택해주세요.");
+      setLoading(false);
+      return;
+    }
+
+    const hasEmptyGuestName = [...teamA, ...teamB].some(
+      (player) => typeof player === "object" && !player.name.trim()
+    );
+    if (hasEmptyGuestName) {
+      setError("게스트 선수의 이름을 입력해주세요.");
+      setLoading(false);
+      return;
+    }
+
     const playerGames = [
       ...teamA.map((player) => {
         if (typeof player === "number") {
