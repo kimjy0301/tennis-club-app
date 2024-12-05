@@ -6,7 +6,7 @@ import { Suspense } from "react";
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "경기 기록 테스트",
+  title: process.env.NEXT_PUBLIC_SITE_TITLE || "경기 기록 테스트",
   description: "테니스 경기 기록 및 관리 시스템",
 };
 

@@ -29,7 +29,7 @@ export default function Navbar() {
               href="/"
               className="text-xl font-bold text-white hover:text-green-100 transition-colors"
             >
-              클럽 매칭 테스트
+              {process.env.NEXT_PUBLIC_SITE_TITLE}
             </Link>
           </div>
 
