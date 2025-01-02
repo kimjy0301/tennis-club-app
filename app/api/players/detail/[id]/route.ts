@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { put } from '@vercel/blob';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { put } from "@vercel/blob";
 
 // GET - 선수 정보 조회
 export async function GET(
@@ -14,17 +14,14 @@ export async function GET(
     });
 
     if (!player) {
-      return NextResponse.json(
-        { error: 'Player not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Player not found" }, { status: 404 });
     }
 
     return NextResponse.json(player);
   } catch (error) {
-    console.error('Error fetching player:', error);
+    console.error("Error fetching player:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch player' },
+      { error: "Failed to fetch player" },
       { status: 500 }
     );
   }
@@ -38,8 +35,9 @@ export async function PUT(
   try {
     const { id } = await params;
     const formData = await request.formData();
-    const name = formData.get('name') as string;
-    const profileImage = formData.get('profileImage') as File | null;
+    const name = formData.get("name") as string;
+    const profileImage = formData.get("profileImage") as File | null;
+    const isGuest = formData.get("isGuest") === "true";
 
     let imageUrl;
     if (profileImage) {
@@ -47,7 +45,7 @@ export async function PUT(
       const timestamp = Date.now();
       const fileName = `${timestamp}-${profileImage.name}`;
       const blob = await put(`profiles/${fileName}`, profileImage, {
-        access: 'public',
+        access: "public",
       });
       imageUrl = blob.url;
     }
@@ -56,15 +54,16 @@ export async function PUT(
       where: { id: parseInt(id) },
       data: {
         name,
+        isGuest,
         ...(imageUrl && { profileImage: imageUrl }),
       },
     });
 
     return NextResponse.json(player);
   } catch (error) {
-    console.error('Error updating player:', error);
+    console.error("Error updating player:", error);
     return NextResponse.json(
-      { error: 'Failed to update player' },
+      { error: "Failed to update player" },
       { status: 500 }
     );
   }
@@ -77,17 +76,14 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    
+
     // 선수가 존재하는지 확인
     const existingPlayer = await prisma.player.findUnique({
       where: { id: parseInt(id) },
     });
 
     if (!existingPlayer) {
-      return NextResponse.json(
-        { error: 'Player not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Player not found" }, { status: 404 });
     }
 
     // 선수와 관련된 모든 데이터 삭제 (트랜잭션 사용)
@@ -102,11 +98,11 @@ export async function DELETE(
       }),
     ]);
 
-    return NextResponse.json({ message: 'Player deleted successfully' });
+    return NextResponse.json({ message: "Player deleted successfully" });
   } catch (error) {
-    console.error('Error deleting player:', error);
+    console.error("Error deleting player:", error);
     return NextResponse.json(
-      { error: 'Failed to delete player' },
+      { error: "Failed to delete player" },
       { status: 500 }
     );
   }
@@ -120,29 +116,32 @@ export async function PATCH(
   try {
     const formData = await request.formData();
     const { id } = await params;
-    
+
     const updateData: {
       name?: string;
       profileImage?: string;
+      isGuest?: boolean;
     } = {};
 
-    const name = formData.get('name');
-    const profileImage = formData.get('profileImage') as File | null;
+    const name = formData.get("name");
+    const profileImage = formData.get("profileImage") as File | null;
+    const isGuest = formData.get("isGuest");
 
     if (name) updateData.name = name as string;
+    if (isGuest !== null) updateData.isGuest = isGuest === "true";
     if (profileImage) {
       // Vercel Blob으로 이미지 업로드
       const timestamp = Date.now();
       const fileName = `${timestamp}-${profileImage.name}`;
       const blob = await put(`profiles/${fileName}`, profileImage, {
-        access: 'public',
+        access: "public",
       });
       updateData.profileImage = blob.url;
     }
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json(
-        { error: 'No data provided for update' },
+        { error: "No data provided for update" },
         { status: 400 }
       );
     }
@@ -154,10 +153,10 @@ export async function PATCH(
 
     return NextResponse.json(player);
   } catch (error) {
-    console.error('Error updating player:', error);
+    console.error("Error updating player:", error);
     return NextResponse.json(
-      { error: 'Failed to update player' },
+      { error: "Failed to update player" },
       { status: 500 }
     );
   }
-} 
+}

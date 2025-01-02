@@ -9,6 +9,7 @@ interface Player {
   id: number;
   name: string;
   profileImage?: string;
+  isGuest: boolean;
 }
 
 export default function PlayerDetail() {
@@ -20,6 +21,7 @@ export default function PlayerDetail() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isGuest, setIsGuest] = useState(false);
 
   const params = useParams();
 
@@ -35,6 +37,7 @@ export default function PlayerDetail() {
       setPlayer(data);
       setName(data.name);
       setImagePreview(data.profileImage);
+      setIsGuest(data.isGuest);
     } catch (error) {
       console.error("Error:", error);
       setError("선수 정보를 불러오는데 실패했습니다.");
@@ -65,6 +68,7 @@ export default function PlayerDetail() {
     try {
       const formData = new FormData();
       formData.append("name", name);
+      formData.append("isGuest", String(isGuest));
       if (newImage) {
         formData.append("profileImage", newImage);
       }
@@ -114,6 +118,22 @@ export default function PlayerDetail() {
                 onChange={(e) => setName(e.target.value)}
                 className="tennis-input w-full"
               />
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="isGuest"
+                checked={isGuest}
+                onChange={(e) => setIsGuest(e.target.checked)}
+                className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+              />
+              <label
+                htmlFor="isGuest"
+                className="ml-2 block text-sm text-gray-900"
+              >
+                게스트 선수
+              </label>
             </div>
 
             <div>
@@ -172,6 +192,9 @@ export default function PlayerDetail() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               {player.name}
             </h2>
+            <p className="text-gray-600 mb-4">
+              {player.isGuest ? "게스트 선수" : "정회원 선수"}
+            </p>
             <div className="space-x-4">
               <button
                 onClick={() => setIsEditing(true)}
