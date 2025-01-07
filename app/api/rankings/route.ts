@@ -88,7 +88,9 @@ export async function GET(request: Request) {
       }
     }
 
-    // 게임 점수 계산 (기존 로직)
+    // 게임 점수 계산 (수정된 로직)
+    const attendanceCheck = new Map(); // 출석 체크를 위한 Map 추가
+
     games.forEach((game) => {
       game.playerGames.forEach((playerGame) => {
         const player = playerGame.player;
@@ -104,8 +106,16 @@ export async function GET(request: Request) {
           achievementsScore: 0,
         };
 
-        // 출석 점수 +2
-        stats.score += 2;
+        // 출석 점수 체크 (하루에 한번만)
+        const gameDate = game.date.toISOString().split("T")[0]; // YYYY-MM-DD 형식
+        const playerAttendance = attendanceCheck.get(player.id) || new Set();
+
+        if (!playerAttendance.has(gameDate)) {
+          stats.score += 2; // 출석 점수 +2
+          playerAttendance.add(gameDate);
+          attendanceCheck.set(player.id, playerAttendance);
+        }
+
         stats.totalGames++;
 
         const isTeamAWinner = game.scoreTeamA > game.scoreTeamB;
