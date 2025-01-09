@@ -19,6 +19,7 @@ interface RankingData {
   achievementsScore: number;
   profileImage?: string;
   id: string;
+  gameDifference: number;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
@@ -179,6 +180,16 @@ export default function Home() {
               <p>
                 승/패/무: {rankings[0]?.wins}/{rankings[0]?.losses}/
                 {rankings[0]?.draws}
+                <span
+                  className={`ml-1 text-xs ${
+                    rankings[0]?.gameDifference > 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  ({rankings[0]?.gameDifference > 0 ? "+" : ""}
+                  {rankings[0]?.gameDifference})
+                </span>
               </p>
               <p>입상: {rankings[0]?.achievementsScore}점</p>
             </div>
@@ -227,6 +238,16 @@ export default function Home() {
                 <div className="text-sm text-gray-600">
                   <p>
                     승/패/무: {player?.wins}/{player?.losses}/{player?.draws}
+                    <span
+                      className={`ml-1 text-xs ${
+                        player?.gameDifference > 0
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      ({player?.gameDifference > 0 ? "+" : ""}
+                      {player?.gameDifference})
+                    </span>
                   </p>
                   <p>입상: {player?.achievementsScore}점</p>
                 </div>
@@ -271,6 +292,16 @@ export default function Home() {
               <p>
                 승/패/무: {rankings[1]?.wins}/{rankings[1]?.losses}/
                 {rankings[1]?.draws}
+                <span
+                  className={`ml-1 text-xs ${
+                    rankings[1]?.gameDifference > 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  ({rankings[1]?.gameDifference > 0 ? "+" : ""}
+                  {rankings[1]?.gameDifference})
+                </span>
               </p>
               <p>입상: {rankings[1]?.achievementsScore}점</p>
             </div>
@@ -316,6 +347,16 @@ export default function Home() {
               <p>
                 승/패/무: {rankings[0]?.wins}/{rankings[0]?.losses}/
                 {rankings[0]?.draws}
+                <span
+                  className={`ml-1 text-xs ${
+                    rankings[0]?.gameDifference > 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  ({rankings[0]?.gameDifference > 0 ? "+" : ""}
+                  {rankings[0]?.gameDifference})
+                </span>
               </p>
               <p>입상: {rankings[0]?.achievementsScore}점</p>
             </div>
@@ -353,6 +394,16 @@ export default function Home() {
               <p>
                 승/패/무: {rankings[2]?.wins}/{rankings[2]?.losses}/
                 {rankings[2]?.draws}
+                <span
+                  className={`ml-1 text-xs ${
+                    rankings[2]?.gameDifference > 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  ({rankings[2]?.gameDifference > 0 ? "+" : ""}
+                  {rankings[2]?.gameDifference})
+                </span>
               </p>
               <p>입상: {rankings[2]?.achievementsScore}점</p>
             </div>
@@ -401,6 +452,16 @@ export default function Home() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {player.wins}/{player.losses}/{player.draws}
+                    <span
+                      className={`ml-1 text-xs ${
+                        player.gameDifference > 0
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      ({player.gameDifference > 0 ? "+" : ""}
+                      {player.gameDifference})
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {player.achievementsScore}

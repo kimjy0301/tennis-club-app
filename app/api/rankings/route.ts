@@ -48,6 +48,7 @@ export async function GET(request: Request) {
           draws: 0,
           score: 0,
           achievementsScore: 0,
+          gameDifference: 0,
         };
 
         // 아직 업적 점수가 계산되지 않은 경우에만 계산
@@ -104,6 +105,7 @@ export async function GET(request: Request) {
           draws: 0,
           score: 0,
           achievementsScore: 0,
+          goalDifference: 0,
         };
 
         // 출석 점수 체크 (하루에 한번만)
@@ -138,13 +140,25 @@ export async function GET(request: Request) {
           stats.losses++;
         }
 
+        // 득실차 계산
+        if (playerGame.team === "A") {
+          stats.gameDifference += game.scoreTeamA - game.scoreTeamB;
+        } else {
+          stats.gameDifference += game.scoreTeamB - game.scoreTeamA;
+        }
+
         playerStats.set(player.id, stats);
       });
     });
 
     // Map을 배열로 변환하고 점수 기준으로 정렬
     const rankings = Array.from(playerStats.values())
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => {
+        if (b.score !== a.score) {
+          return b.score - a.score; // 먼저 점수로 정렬
+        }
+        return b.gameDifference - a.gameDifference; // 점수가 같으면 득실차로 정렬
+      })
       .map((player, index) => ({
         ...player,
         rank: index + 1,
