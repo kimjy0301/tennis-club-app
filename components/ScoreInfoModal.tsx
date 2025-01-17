@@ -10,6 +10,10 @@ export default function ScoreInfoModal({
   isOpen,
   onClose,
 }: ScoreInfoModalProps) {
+  const SCORING_METHOD = process.env.NEXT_PUBLIC_SCORING_METHOD;
+
+  console.log(SCORING_METHOD);
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
@@ -40,17 +44,31 @@ export default function ScoreInfoModal({
                   <h4 className="font-semibold text-green-700">
                     경기 결과 점수
                   </h4>
-                  <ul className="list-disc pl-5 text-sm text-gray-600">
-                    <li>승리: +3점</li>
-                    <li>무승부: +2점</li>
-                    <li>패배: +1점</li>
-                  </ul>
+                  {SCORING_METHOD === "TOP" ? (
+                    <ul className="list-disc pl-5 text-sm text-gray-600">
+                      <li>승리: +1점</li>
+                      <li>무승부: +0점</li>
+                      <li>패배: +0점</li>
+                    </ul>
+                  ) : (
+                    <ul className="list-disc pl-5 text-sm text-gray-600">
+                      <li>승리: +3점</li>
+                      <li>무승부: +2점</li>
+                      <li>패배: +1점</li>
+                    </ul>
+                  )}
                 </div>
                 <div>
                   <h4 className="font-semibold text-green-700">출석 점수</h4>
-                  <ul className="list-disc pl-5 text-sm text-gray-600">
-                    <li>매일 1경기 출석: +2점</li>
-                  </ul>
+                  {SCORING_METHOD === "TOP" ? (
+                    <ul className="list-disc pl-5 text-sm text-gray-600">
+                      <li>출석 점수 없음</li>
+                    </ul>
+                  ) : (
+                    <ul className="list-disc pl-5 text-sm text-gray-600">
+                      <li>매일 1경기 출석: +2점</li>
+                    </ul>
+                  )}
                 </div>
                 <div>
                   <h4 className="font-semibold text-green-700">

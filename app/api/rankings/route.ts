@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
+    const scoringMethod = process.env.NEXT_PUBLIC_SCORING_METHOD || "default";
+
     const { searchParams } = new URL(request.url);
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
@@ -89,68 +91,114 @@ export async function GET(request: Request) {
       }
     }
 
-    // 게임 점수 계산 (수정된 로직)
-    const attendanceCheck = new Map(); // 출석 체크를 위한 Map 추가
+    if (scoringMethod === "default") {
+      // 게임 점수 계산 (수정된 로직)
+      const attendanceCheck = new Map(); // 출석 체크를 위한 Map 추가
 
-    games.forEach((game) => {
-      game.playerGames.forEach((playerGame) => {
-        const player = playerGame.player;
-        const stats = playerStats.get(player.id) || {
-          id: player.id,
-          name: player.name,
-          profileImage: player.profileImage,
-          totalGames: 0,
-          wins: 0,
-          losses: 0,
-          draws: 0,
-          score: 0,
-          achievementsScore: 0,
-          goalDifference: 0,
-        };
+      games.forEach((game) => {
+        game.playerGames.forEach((playerGame) => {
+          const player = playerGame.player;
+          const stats = playerStats.get(player.id) || {
+            id: player.id,
+            name: player.name,
+            profileImage: player.profileImage,
+            totalGames: 0,
+            wins: 0,
+            losses: 0,
+            draws: 0,
+            score: 0,
+            achievementsScore: 0,
+            goalDifference: 0,
+          };
 
-        // 출석 점수 체크 (하루에 한번만)
-        const gameDate = game.date.toISOString().split("T")[0]; // YYYY-MM-DD 형식
-        const playerAttendance = attendanceCheck.get(player.id) || new Set();
+          // 출석 점수 체크 (하루에 한번만)
+          const gameDate = game.date.toISOString().split("T")[0]; // YYYY-MM-DD 형식
+          const playerAttendance = attendanceCheck.get(player.id) || new Set();
 
-        if (!playerAttendance.has(gameDate)) {
-          stats.score += 2; // 출석 점수 +2
-          playerAttendance.add(gameDate);
-          attendanceCheck.set(player.id, playerAttendance);
-        }
+          if (!playerAttendance.has(gameDate)) {
+            stats.score += 2; // 출석 점수 +2
+            playerAttendance.add(gameDate);
+            attendanceCheck.set(player.id, playerAttendance);
+          }
 
-        stats.totalGames++;
+          stats.totalGames++;
 
-        const isTeamAWinner = game.scoreTeamA > game.scoreTeamB;
-        const isDraw = game.scoreTeamA === game.scoreTeamB;
+          const isTeamAWinner = game.scoreTeamA > game.scoreTeamB;
+          const isDraw = game.scoreTeamA === game.scoreTeamB;
 
-        if (isDraw) {
-          // 무승부 점수 +2
-          stats.score += 2;
-          stats.draws++;
-        } else if (
-          (playerGame.team === "A" && isTeamAWinner) ||
-          (playerGame.team === "B" && !isTeamAWinner)
-        ) {
-          // 승리 점수 +3
-          stats.score += 3;
-          stats.wins++;
-        } else {
-          // 패배 점수 +1
-          stats.score += 1;
-          stats.losses++;
-        }
+          if (isDraw) {
+            // 무승부 점수 +2
+            stats.score += 2;
+            stats.draws++;
+          } else if (
+            (playerGame.team === "A" && isTeamAWinner) ||
+            (playerGame.team === "B" && !isTeamAWinner)
+          ) {
+            // 승리 점수 +3
+            stats.score += 3;
+            stats.wins++;
+          } else {
+            // 패배 점수 +1
+            stats.score += 1;
+            stats.losses++;
+          }
 
-        // 득실차 계산
-        if (playerGame.team === "A") {
-          stats.gameDifference += game.scoreTeamA - game.scoreTeamB;
-        } else {
-          stats.gameDifference += game.scoreTeamB - game.scoreTeamA;
-        }
+          // 득실차 계산
+          if (playerGame.team === "A") {
+            stats.gameDifference += game.scoreTeamA - game.scoreTeamB;
+          } else {
+            stats.gameDifference += game.scoreTeamB - game.scoreTeamA;
+          }
 
-        playerStats.set(player.id, stats);
+          playerStats.set(player.id, stats);
+        });
       });
-    });
+    } else if (scoringMethod === "TOP") {
+      games.forEach((game) => {
+        game.playerGames.forEach((playerGame) => {
+          const player = playerGame.player;
+          const stats = playerStats.get(player.id) || {
+            id: player.id,
+            name: player.name,
+            profileImage: player.profileImage,
+            totalGames: 0,
+            wins: 0,
+            losses: 0,
+            draws: 0,
+            score: 0,
+            achievementsScore: 0,
+            gameDifference: 0,
+          };
 
+          stats.totalGames++;
+
+          const isTeamAWinner = game.scoreTeamA > game.scoreTeamB;
+          const isDraw = game.scoreTeamA === game.scoreTeamB;
+
+          if (isDraw) {
+            stats.draws++;
+          } else if (
+            (playerGame.team === "A" && isTeamAWinner) ||
+            (playerGame.team === "B" && !isTeamAWinner)
+          ) {
+            // 승리시에만 1점 부여
+            stats.score += 1;
+            stats.wins++;
+          } else {
+            stats.losses++;
+          }
+
+          // 득실차 계산
+          if (playerGame.team === "A") {
+            stats.gameDifference += game.scoreTeamA - game.scoreTeamB;
+          } else {
+            stats.gameDifference += game.scoreTeamB - game.scoreTeamA;
+          }
+
+          playerStats.set(player.id, stats);
+        });
+      });
+    }
     // Map을 배열로 변환하고 점수 기준으로 정렬
     const rankings = Array.from(playerStats.values())
       .sort((a, b) => {
