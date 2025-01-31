@@ -32,13 +32,13 @@ export default function ScoreInfoModal({
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
             <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              1
               <Dialog.Title
                 as="h3"
                 className="text-lg font-bold leading-6 text-gray-900 mb-4"
               >
                 점수 계산 방식
               </Dialog.Title>
-
               <div className="mt-2 space-y-4">
                 <div>
                   <h4 className="font-semibold text-green-700">
@@ -86,7 +86,6 @@ export default function ScoreInfoModal({
                   산정됩니다.
                 </div>
               </div>
-
               <div className="mt-6">
                 <button
                   type="button"

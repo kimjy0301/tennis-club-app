@@ -307,10 +307,7 @@ export default function VersusPage() {
                       A팀
                     </div>
                     <div className="font-bold text-2xl mb-2">
-                      {game.playerGames.find((pg) => pg.player.id === player1Id)
-                        ?.team === "A"
-                        ? game.scoreTeamA
-                        : game.scoreTeamB}
+                      {game.scoreTeamA}
                     </div>
                     <div className="text-sm text-gray-600">
                       {game.playerGames
@@ -319,8 +316,10 @@ export default function VersusPage() {
                           <div
                             key={pg.player.id}
                             className={`${
-                              [player1Id, player2Id].includes(pg.player.id)
+                              pg.player.id === player1Id
                                 ? "font-semibold text-green-600"
+                                : pg.player.id === player2Id
+                                ? "font-semibold text-yellow-600"
                                 : ""
                             }`}
                           >
@@ -377,10 +376,7 @@ export default function VersusPage() {
                       B팀
                     </div>
                     <div className="font-bold text-2xl mb-2">
-                      {game.playerGames.find((pg) => pg.player.id === player2Id)
-                        ?.team === "A"
-                        ? game.scoreTeamA
-                        : game.scoreTeamB}
+                      {game.scoreTeamB}
                     </div>
                     <div className="text-sm text-gray-600">
                       {game.playerGames
@@ -389,8 +385,10 @@ export default function VersusPage() {
                           <div
                             key={pg.player.id}
                             className={`${
-                              [player1Id, player2Id].includes(pg.player.id)
+                              pg.player.id === player1Id
                                 ? "font-semibold text-green-600"
+                                : pg.player.id === player2Id
+                                ? "font-semibold text-yellow-600"
                                 : ""
                             }`}
                           >
