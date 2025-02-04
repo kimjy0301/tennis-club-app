@@ -12,6 +12,7 @@ interface PlayerStats {
   totalGames: number;
   wins: number;
   losses: number;
+  draws: number;
   winRate: number;
   profileImage?: string;
 }
@@ -244,7 +245,7 @@ export default function PlayerStats() {
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-4 gap-4 text-center">
               <div className="bg-gray-50 rounded-lg p-3">
                 <div className="text-sm text-gray-500">승률</div>
                 <div className="text-lg font-bold text-gray-900">
@@ -257,10 +258,17 @@ export default function PlayerStats() {
                   {player.wins}
                 </div>
               </div>
+
               <div className="bg-gray-50 rounded-lg p-3">
                 <div className="text-sm text-gray-500">패</div>
                 <div className="text-lg font-bold text-red-600">
                   {player.losses}
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3">
+                <div className="text-sm text-gray-500">무</div>
+                <div className="text-lg font-bold text-gray-600">
+                  {player.draws}
                 </div>
               </div>
             </div>
