@@ -86,13 +86,93 @@ export default function Home() {
     }
   };
 
+  const [currentPeriod, setCurrentPeriod] = useState(getCurrentPeriod());
+
+  // 이전 기간으로 이동하는 함수
+  const goToPreviousPeriod = () => {
+    const periodType = process.env.NEXT_PUBLIC_PERIOD_TYPE || "quarter";
+    const newDate = new Date(currentPeriod.startDate);
+
+    if (periodType === "half") {
+      // 상반기/하반기 이동
+      newDate.setMonth(newDate.getMonth() - 6);
+    } else {
+      // 분기 이동
+      newDate.setMonth(newDate.getMonth() - 3);
+    }
+
+    const newPeriod = getPeriodForDate(newDate);
+    setCurrentPeriod(newPeriod);
+  };
+
+  // 다음 기간으로 이동하는 함수
+  const goToNextPeriod = () => {
+    const periodType = process.env.NEXT_PUBLIC_PERIOD_TYPE || "quarter";
+    const newDate = new Date(currentPeriod.startDate);
+
+    if (periodType === "half") {
+      // 상반기/하반기 이동
+      newDate.setMonth(newDate.getMonth() + 6);
+    } else {
+      // 분기 이동
+      newDate.setMonth(newDate.getMonth() + 3);
+    }
+
+    const newPeriod = getPeriodForDate(newDate);
+    setCurrentPeriod(newPeriod);
+  };
+
+  // 특정 날짜의 기간 정보를 가져오는 함수
+  const getPeriodForDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const periodType = process.env.NEXT_PUBLIC_PERIOD_TYPE || "quarter";
+
+    if (periodType === "half") {
+      const isFirstHalf = month <= 6;
+      const startMonth = isFirstHalf ? 0 : 6;
+      const endMonth = isFirstHalf ? 5 : 11;
+
+      return {
+        title: `${year}년 ${isFirstHalf ? "상반기" : "하반기"}`,
+        startDate: new Date(year, startMonth, 1),
+        endDate: new Date(
+          year,
+          endMonth,
+          new Date(year, endMonth + 1, 0).getDate(),
+          23,
+          59,
+          59,
+          999
+        ),
+      };
+    } else {
+      const quarter = Math.ceil(month / 3);
+      const startMonth = (quarter - 1) * 3;
+      const endMonth = quarter * 3;
+
+      return {
+        title: `${year}년 ${quarter}분기`,
+        startDate: new Date(year, startMonth, 1),
+        endDate: new Date(
+          year,
+          endMonth - 1,
+          new Date(year, endMonth, 0).getDate(),
+          23,
+          59,
+          59,
+          999
+        ),
+      };
+    }
+  };
+
   useEffect(() => {
     const fetchRankings = async () => {
       try {
-        const period = getCurrentPeriod();
         const params = new URLSearchParams({
-          startDate: period.startDate.toISOString(),
-          endDate: period.endDate.toISOString(),
+          startDate: currentPeriod.startDate.toISOString(),
+          endDate: currentPeriod.endDate.toISOString(),
         });
 
         const response = await fetch(`${API_URL}/api/rankings?${params}`);
@@ -107,7 +187,7 @@ export default function Home() {
     };
 
     fetchRankings();
-  }, []);
+  }, [currentPeriod]);
 
   const handlePlayerClick = async (playerId: string) => {
     const player = rankings.find((r) => r.id === playerId);
@@ -157,10 +237,52 @@ export default function Home() {
   return (
     <div className="max-w-4xl mx-auto p-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
-          {getCurrentPeriod().title} 랭킹
-        </h1>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={goToPreviousPeriod}
+            className="p-2 rounded-full bg-green-600 hover:bg-green-700 transition-colors text-white"
+            title="이전 기간"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={4}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {currentPeriod.title} 랭킹
+          </h1>
+          <button
+            onClick={goToNextPeriod}
+            className="p-2 rounded-full bg-green-600 hover:bg-green-700 transition-colors text-white"
+            title="다음 기간"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={4}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
+        <div className="flex gap-2 ml-2">
           <button
             onClick={() => setShowScoreInfo(true)}
             className="fixed bottom-4 right-4 w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-2xl text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 z-50 border-2 border-white/30 backdrop-blur-sm"
