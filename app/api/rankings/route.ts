@@ -32,14 +32,43 @@ export async function GET(request: Request) {
       },
     });
 
+    // 한 번에 모든 업적 조회
+    const achievementsWhereCondition: {
+      date?: {
+        gte?: Date;
+        lte?: Date;
+      };
+    } = {};
+
+    if (startDate && endDate) {
+      achievementsWhereCondition.date = {
+        gte: new Date(startDate),
+        lte: new Date(endDate),
+      };
+    }
+
+    const allAchievements = await prisma.achievement.findMany({
+      where: achievementsWhereCondition,
+    });
+
+    // 플레이어별 업적 점수를 미리 계산
+    const playerAchievementScores = new Map();
+    allAchievements.forEach((achievement) => {
+      const currentScore =
+        playerAchievementScores.get(achievement.playerId) || 0;
+      playerAchievementScores.set(
+        achievement.playerId,
+        currentScore + achievement.points
+      );
+    });
+
     // 선수별 통계 계산
     const playerStats = new Map();
 
-    // 먼저 모든 선수의 업적 점수를 계산
+    // 게임 통계와 미리 계산된 업적 점수 합산
     for (const game of games) {
       for (const playerGame of game.playerGames) {
         const player = playerGame.player;
-        // 기존 통계 초기화에 achievements 점수 합계 추가
         const stats = playerStats.get(player.id) || {
           id: player.id,
           name: player.name,
@@ -53,37 +82,10 @@ export async function GET(request: Request) {
           gameDifference: 0,
         };
 
-        // 아직 업적 점수가 계산되지 않은 경우에만 계산
+        // 미리 계산된 업적 점수 적용
         if (!stats.achievementsCalculated) {
-          // 해당 선수의 모든 업적 조회
-          const achievementsWhereCondition: {
-            playerId: number;
-            date?: {
-              gte?: Date;
-              lte?: Date;
-            };
-          } = {
-            playerId: player.id,
-          };
-
-          // startDate와 endDate가 있는 경우 날짜 조건 추가
-          if (startDate && endDate) {
-            achievementsWhereCondition.date = {
-              gte: new Date(startDate),
-              lte: new Date(endDate),
-            };
-          }
-
-          const achievements = await prisma.achievement.findMany({
-            where: achievementsWhereCondition,
-          });
-
-          // 업적 점수 합산을 achievementsScore에 저장
-          stats.achievementsScore = achievements.reduce(
-            (sum, achievement) => sum + achievement.points,
-            0
-          );
-          stats.score += stats.achievementsScore; // 전체 점수에 업적 점수 추가
+          stats.achievementsScore = playerAchievementScores.get(player.id) || 0;
+          stats.score += stats.achievementsScore;
           stats.achievementsCalculated = true;
         }
 

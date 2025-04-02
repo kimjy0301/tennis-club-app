@@ -36,18 +36,54 @@ export default function Home() {
 
   const [showScoreInfo, setShowScoreInfo] = useState(false);
 
-  // 현재 상/하반기 계산을 위한 함수
+  // 현재 기간 계산을 위한 함수
   const getCurrentPeriod = () => {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
-    const isFirstHalf = month <= 6;
 
-    return {
-      title: `${year}년 ${isFirstHalf ? "상반기" : "하반기"}`,
-      startDate: new Date(year, isFirstHalf ? 0 : 6, 1),
-      endDate: new Date(year, isFirstHalf ? 5 : 11, 31, 23, 59, 59, 999),
-    };
+    // 환경변수에서 기간 설정 가져오기 (quarter 또는 half)
+    const periodType = process.env.NEXT_PUBLIC_PERIOD_TYPE || "quarter";
+
+    if (periodType === "half") {
+      // 상반기/하반기
+      const isFirstHalf = month <= 6;
+      const startMonth = isFirstHalf ? 0 : 6;
+      const endMonth = isFirstHalf ? 5 : 11;
+
+      return {
+        title: `${year}년 ${isFirstHalf ? "상반기" : "하반기"}`,
+        startDate: new Date(year, startMonth, 1),
+        endDate: new Date(
+          year,
+          endMonth,
+          new Date(year, endMonth + 1, 0).getDate(),
+          23,
+          59,
+          59,
+          999
+        ),
+      };
+    } else {
+      // 분기별
+      const quarter = Math.ceil(month / 3);
+      const startMonth = (quarter - 1) * 3;
+      const endMonth = quarter * 3;
+
+      return {
+        title: `${year}년 ${quarter}분기`,
+        startDate: new Date(year, startMonth, 1),
+        endDate: new Date(
+          year,
+          endMonth - 1,
+          new Date(year, endMonth, 0).getDate(),
+          23,
+          59,
+          59,
+          999
+        ),
+      };
+    }
   };
 
   useEffect(() => {
