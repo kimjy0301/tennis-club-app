@@ -11,6 +11,8 @@ export default function ScoreInfoModal({
   onClose,
 }: ScoreInfoModalProps) {
   const SCORING_METHOD = process.env.NEXT_PUBLIC_SCORING_METHOD;
+  // 승리 점수는 환경 변수로 설정 가능 (기본값: 3점)
+  const WIN_POINTS = parseInt(process.env.NEXT_PUBLIC_WIN_POINTS || "3", 10);
 
   console.log(SCORING_METHOD);
 
@@ -52,7 +54,7 @@ export default function ScoreInfoModal({
                     </ul>
                   ) : (
                     <ul className="list-disc pl-5 text-sm text-gray-600">
-                      <li>승리: +3점</li>
+                      <li>승리: +{WIN_POINTS}점</li>
                       <li>무승부: +2점</li>
                       <li>패배: +1점</li>
                     </ul>

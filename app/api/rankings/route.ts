@@ -96,6 +96,8 @@ export async function GET(request: Request) {
     if (scoringMethod === "default") {
       // 게임 점수 계산 (수정된 로직)
       const attendanceCheck = new Map(); // 출석 체크를 위한 Map 추가
+      // 승리 점수는 환경 변수로 설정 가능 (기본값: 3점)
+      const winPoints = parseInt(process.env.NEXT_PUBLIC_WIN_POINTS || "3", 10);
 
       games.forEach((game) => {
         game.playerGames.forEach((playerGame) => {
@@ -136,8 +138,8 @@ export async function GET(request: Request) {
             (playerGame.team === "A" && isTeamAWinner) ||
             (playerGame.team === "B" && !isTeamAWinner)
           ) {
-            // 승리 점수 +3
-            stats.score += 3;
+            // 승리 점수 (환경 변수로 설정 가능)
+            stats.score += winPoints;
             stats.wins++;
           } else {
             // 패배 점수 +1
