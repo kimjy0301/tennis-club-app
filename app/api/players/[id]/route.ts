@@ -4,13 +4,13 @@ import { put } from '@vercel/blob';
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ name: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { name } = await params;
+    const { id } = await params;
     const player = await prisma.player.findUnique({
       where: {
-        id: parseInt(name)
+        id: parseInt(id)
       }
     });
 
