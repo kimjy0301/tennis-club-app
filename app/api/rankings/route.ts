@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { DUMANGANG_WIN_POINTS, isDumangangWinOnlyRule } from "@/lib/scoring";
 
 export async function GET(request: Request) {
   try {
@@ -117,9 +118,11 @@ export async function GET(request: Request) {
 
           // 출석 점수 체크 (하루에 한번만)
           const gameDate = game.date.toISOString().split("T")[0]; // YYYY-MM-DD 형식
+          // 두만강테니스클럽: 10월 1일 경기부터 승리만 점수 부여
+          const winOnly = isDumangangWinOnlyRule(gameDate);
           const playerAttendance = attendanceCheck.get(player.id) || new Set();
 
-          if (!playerAttendance.has(gameDate)) {
+          if (!winOnly && !playerAttendance.has(gameDate)) {
             stats.score += 2; // 출석 점수 +2
             playerAttendance.add(gameDate);
             attendanceCheck.set(player.id, playerAttendance);
@@ -132,18 +135,18 @@ export async function GET(request: Request) {
 
           if (isDraw) {
             // 무승부 점수 +2
-            stats.score += 2;
+            if (!winOnly) stats.score += 2;
             stats.draws++;
           } else if (
             (playerGame.team === "A" && isTeamAWinner) ||
             (playerGame.team === "B" && !isTeamAWinner)
           ) {
             // 승리 점수 (환경 변수로 설정 가능)
-            stats.score += winPoints;
+            stats.score += winOnly ? DUMANGANG_WIN_POINTS : winPoints;
             stats.wins++;
           } else {
             // 패배 점수 +1
-            stats.score += 1;
+            if (!winOnly) stats.score += 1;
             stats.losses++;
           }
 

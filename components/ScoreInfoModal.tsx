@@ -1,5 +1,10 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import {
+  DUMANGANG_WIN_POINTS,
+  isDumangangSite,
+  isDumangangWinOnlyRule,
+} from "@/lib/scoring";
 
 interface ScoreInfoModalProps {
   isOpen: boolean;
@@ -13,8 +18,12 @@ export default function ScoreInfoModal({
   const SCORING_METHOD = process.env.NEXT_PUBLIC_SCORING_METHOD;
   // 승리 점수는 환경 변수로 설정 가능 (기본값: 3점)
   const WIN_POINTS = parseInt(process.env.NEXT_PUBLIC_WIN_POINTS || "3", 10);
-
-  console.log(SCORING_METHOD);
+  const today = new Date().toLocaleDateString("sv-SE", {
+    timeZone: "Asia/Seoul",
+  });
+  const winOnly = SCORING_METHOD !== "TOP" && isDumangangWinOnlyRule(today);
+  const showUpcomingNotice =
+    SCORING_METHOD !== "TOP" && isDumangangSite() && !winOnly;
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -52,6 +61,12 @@ export default function ScoreInfoModal({
                       <li>무승부: +0점</li>
                       <li>패배: +0점</li>
                     </ul>
+                  ) : winOnly ? (
+                    <ul className="list-disc pl-5 text-sm text-gray-600">
+                      <li>승리: +{DUMANGANG_WIN_POINTS}점</li>
+                      <li>무승부: +0점</li>
+                      <li>패배: +0점</li>
+                    </ul>
                   ) : (
                     <ul className="list-disc pl-5 text-sm text-gray-600">
                       <li>승리: +{WIN_POINTS}점</li>
@@ -59,10 +74,16 @@ export default function ScoreInfoModal({
                       <li>패배: +1점</li>
                     </ul>
                   )}
+                  {showUpcomingNotice && (
+                    <p className="mt-1 text-xs text-red-500">
+                      * 10월 1일 경기부터 승리 +{DUMANGANG_WIN_POINTS}점만
+                      부여되며, 무승부·패배·출석 점수는 없습니다.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <h4 className="font-semibold text-green-700">출석 점수</h4>
-                  {SCORING_METHOD === "TOP" ? (
+                  {SCORING_METHOD === "TOP" || winOnly ? (
                     <ul className="list-disc pl-5 text-sm text-gray-600">
                       <li>출석 점수 없음</li>
                     </ul>
